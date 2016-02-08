@@ -1,9 +1,19 @@
 <?php
+<<<<<<< HEAD
+=======
+/// This is the main login ////
+/// This is the main login ////
+/// This is the main login ////
+>>>>>>> 4d4054cbd4a22e15a68386d74e504e49f7866731
 session_start(); 
 require_once("../config.php");
 if (!isset($_SESSION['userAdmn'])) {
 	header('Location: /');
+<<<<<<< HEAD
 } 
+=======
+}
+>>>>>>> 4d4054cbd4a22e15a68386d74e504e49f7866731
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -170,4 +180,8 @@ if (!isset($_SESSION['userAdmn'])) {
 
     </div> <!-- /container -->
   </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> 4d4054cbd4a22e15a68386d74e504e49f7866731
