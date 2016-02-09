@@ -58,6 +58,10 @@ if (isset($_POST['guardar'])) {
 		'".$pre_fpa."',
 		'".__($_POST['pre_costototal'])."',
 		'".__($_POST['pre_primerpago'])."') ");
+
+		//INSERTAR NUMERO DE PAGARES EN TABLA PAGOS //
+	    ////
+
 	echo '<div class="alert alert-success" role="alert">Venta de unidad guardada exitosamente<br><a href="/contratocp.php" target="_blank" class="btn btn-info">Generar contrato de Compra-Venta</a> <a href="/admin.php?cartadeposito" target="_blank" class="btn btn-info">Generar Carta de unidad de depósito</a> </div>';
 }
 

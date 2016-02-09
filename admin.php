@@ -118,6 +118,9 @@ if (!isset($_SESSION['userAdmn'])) {
         elseif (isset($_GET['marca'])) {
           include_once("marca.php");
         }
+        elseif (isset($_GET['pagos'])) {
+          include_once("pagos.php");
+        }
         else{
       	    ?>
 	         <h1>Administrador</h1>
