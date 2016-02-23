@@ -1,7 +1,4 @@
 <?php
-/// This is the main login ////
-/// This is the main login ////
-/// This is the main login ////
 session_start(); 
 require_once("../config.php");
 if (!isset($_SESSION['userAdmn'])) {
@@ -28,7 +25,6 @@ if (!isset($_SESSION['userAdmn'])) {
   </head>
   <body>
     <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
@@ -39,6 +35,7 @@ if (!isset($_SESSION['userAdmn'])) {
           <a class="navbar-brand" href="/admin.php">Autos 2000</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
+          
           <ul class="nav navbar-nav">
             <li class="active"><a href="/admin.php">Inicio</a></li>
             <li class="dropdown">
@@ -79,15 +76,15 @@ if (!isset($_SESSION['userAdmn'])) {
                 <li><a href="?finan">Financiamiento</a></li>
               </ul>
             </li>
-            
             <li><a href="http://correo.autos2000.mx" target="_blank">Correo</a></li>
           </ul>
+
           <ul class="nav navbar-nav navbar-right">
             <li><a class="navbar-brand" href="#">Bienvenido(a) <?php echo $_SESSION['alias'];?> </a></li>
             <li class="active"><a href="/?logout">Salir</span></a></li>
           </ul>
+          
         </div><!--/.nav-collapse -->
-      </div>
     </nav>
 
     <div class="container">
@@ -173,7 +170,7 @@ if (!isset($_SESSION['userAdmn'])) {
 		 }
       	?>
       </div>
-
     </div> <!-- /container -->
+
   </body>
 </html>

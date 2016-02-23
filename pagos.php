@@ -5,16 +5,34 @@ if (!isset($_SESSION['userAdmn'])) {
 }
 include("marcas.php");
 
+// PESUPUESTO
+$presu=$sql->Query("SELECT ve_id,ve_vu,cli_id,pre_id FROM presupuesto WHERE pre_id='".__($_GET['id'])."' ");
+if ($presu->num_rows>0) $presu=$presu->fetch_object(); else echo "No existe presupuesto";
+
 // CLIENTE
-$datos=$sql->Query("SELECT cli_nombre,cli_apellido FROM clientes WHERE cli_id='".__($_GET['cli_id'])."' ");
+$datos=$sql->Query("SELECT cli_id,cli_nombre,cli_apellido FROM clientes WHERE cli_id='".$presu->cli_id."' ");
 if ($datos->num_rows>0) {
 	$datos=$datos->fetch_object();
 }else echo "Cliente inexistente";
 
+// VEHICULO
+$vehiculo=$sql->Query("SELECT ve_id,ve_marca,ve_modelo FROM vehiculos WHERE ve_id='".$presu->ve_id."' ");
+if($vehiculo->num_rows>0) $vehiculo=$vehiculo->fetch_object(); else echo "No existe vehículo para está venta";
+
 // MARCA
+$marca=$sql->Query("SELECT ma_nombre FROM marcas WHERE ma_id='".$vehiculo->ve_marca."' ");
+if($marca->num_rows>0) $marca=$marca->fetch_object(); else echo "No existe la marca para este vehículo";
+
+echo "<h1>Realizar pagos</h1>";
+if (isset($_POST['guardar'])) {
+	if ($_POST['pag_fecha']!='' AND $_POST['pag_pago']!='') {
+		$insert=$sql->Query("INSERT INTO pagos VALUES(NULL,'".__($_GET['id'])."', '".$presu->cli_id."','".$presu->ve_id."', '".__($_POST['pag_fecha'])."', '".__($_POST['pag_pago'])."', '1'  ) ");
+	    echo "<div class='alert alert-success'>Su pago ah sido agregado exitosamente</div>";
+	}
+	else{echo "<div class='alert alert-warning'>Por favor agregue todos los campos</div>";}
+}
 ?>
-<h1>Realizar pagos</h1>
-<form class="col-xs-12">
+<form class="col-xs-12" name="pago" method="post" >
     <div class="col-sm-6">
 		<div class="panel panel-primary ">
 			<div class="panel-heading">Datos del cliente</div>
@@ -26,9 +44,9 @@ if ($datos->num_rows>0) {
 					<th>Nombre del cliente:</th>
 				</tr>
 				<tr>
-					<td>#<?php echo __($_GET['cli_id']); ?></td>
-					<td>Nissan2000</td>
-					<td>5454</td>
+					<td>#<?php echo __($_GET['id']); ?></td>
+					<td><?php echo $marca->ma_nombre." ".$vehiculo->ve_modelo; ?> </td>
+					<td><?php echo $presu->ve_vu;?></td>
 					<td><?php echo $datos->cli_nombre." ".$datos->cli_apellido; ?></td>
 				</tr>
 			</table>
