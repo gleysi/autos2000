@@ -107,7 +107,7 @@ include("marcas.php");
 					<td>".$f->pre_nummensualidades." meses, ".$f->pre_numanualidades." anualidades</td>
 					<td>".$NumVencidos."</td>
 					<td>$".number_format($adeudo,2)."</td>
-					<td><a href='?pagos&id=".$f->pre_id."' class='btn btn-info' >Realizar pagos o abonar</a></td>
+					<td><a href='?pagos&id=".$f->pre_id."&cli_id=".$cli->cli_id."' class='btn btn-info' >Realizar pagos o abonar</a></td>
 				</tr>";
 			}
 		}
