@@ -6,7 +6,7 @@ if (!isset($_SESSION['userAdmn'])) {
 include("marcas.php");
 
 // PESUPUESTO
-$presu=$sql->Query("SELECT ve_id,ve_vu,cli_id,pre_id FROM presupuesto WHERE pre_id='".__($_GET['id'])."' ");
+$presu=$sql->Query("SELECT ve_id,ve_vu,cli_id,pre_id, pre_fechapagmensualidades FROM presupuesto WHERE pre_id='".__($_GET['id'])."' ");
 if ($presu->num_rows>0) $presu=$presu->fetch_object(); else echo "No existe presupuesto";
 
 // CLIENTE
@@ -31,6 +31,13 @@ if (isset($_POST['guardar'])) {
 	}
 	else{echo "<div class='alert alert-warning'>Por favor agregue todos los campos</div>";}
 }
+
+
+$fechainicial=date_create($presu->pre_fechapagmensualidades);
+$fechafinal= date_create(date('Y-m-d'));
+$interval= date_diff($fechafinal,$fechainicial);
+echo $interval->format('han pasado %m meses ');
+
 ?>
 <form class="col-xs-12" name="pago" method="post" >
     <div class="col-sm-6">
@@ -42,13 +49,44 @@ if (isset($_POST['guardar'])) {
 					<th>Vehículo</th>
 					<th>VU</th>
 					<th>Nombre del cliente:</th>
+					<th>Fecha de pago</th>
 				</tr>
 				<tr>
 					<td>#<?php echo __($_GET['id']); ?></td>
 					<td><?php echo $marca->ma_nombre." ".$vehiculo->ve_modelo; ?> </td>
 					<td><?php echo $presu->ve_vu;?></td>
 					<td><?php echo $datos->cli_nombre." ".$datos->cli_apellido; ?></td>
+					<td><strong><?php echo date('d',strtotime($presu->pre_fechapagmensualidades));?> de cada mes </strong><br> Empieza a pagar a partir de:<br> <?php echo strftime('%d de %B del %Y', strtotime($presu->pre_fechapagmensualidades));?></td>
 				</tr>
+			</table>
+		</div>
+
+		<div class="panel panel-primary ">
+			<div class="panel-heading">PAGOS</div>
+			<table class="table table-striped">
+				<tr >
+					<th>Número de pago:</th>
+					<th>Fecha de pago</th>
+					<th>Depósito</th>
+					<th></th>
+				</tr>
+				    <?php
+				    $i=1;
+				    $pa=$sql->Query("SELECT pag_fecha,pag_pago FROM pagos WHERE pre_id='".__($_GET['id'])."' ORDER BY pag_fecha DESC ");
+				    if ($pa->num_rows>0) {
+				    	while ($p=$pa->fetch_object()) {
+				    		?>
+							<tr>
+				    		<td>#<?php echo $i;?></td>
+							<td><?php echo $p->pag_fecha; ?> </td>
+							<td><?php echo $p->pag_pago;?></td>
+							<td><button>Recibo de pago</button></td>
+				    		</tr>
+				    		<?php
+				    		$i++;
+				    	}
+				    }
+				    ?>
 			</table>
 		</div>
 	</div>
