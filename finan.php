@@ -37,67 +37,56 @@ include("marcas.php");
 				if ($mar->num_rows>0) $mar=$mar->fetch_object();
 
 				// Documentos vencidos en mensualidades ///
-				$doc= $sql->Query("SELECT * FROM pagos WHERE pre_id='".$f->pre_id."' AND pag_tipo='1' ");
+
+				$ultimo = $f->pre_fechapagmensualidades;
+				if ($ultimo >= date('Y-m-d')) {
+					$ultimo = date('Y-m-d');
+				}
 				$verde=$amarillo=$rojo=null;
-				$Npagos=0;
-				$hoy = date('Y-m-d');
-				$fecha_mensu=$f->pre_fechapagmensualidades;
+				$Npagos = 0;
 
-				$NumPagosHechos =$doc->num_rows; // NUMERO DE PAGOS HECHOS
-				$NumPagares=$f->pre_nummensualidades;// NUMERO DE PAGARES
-				$NumVencidos = $NumPagares - $NumPagosHechos;
-				//				6		   -	0            = 10
+				$doc = $sql->Query("SELECT * FROM pagos WHERE pre_id='".$f->pre_id."' AND pag_tipo='1' ORDER BY pag_fecha DESC ");
 				if ($doc->num_rows>0) {
-
-					// CERO PAGARÉS VENCIDOS //
-					if ($NumVencidos==0) {
-						$amarillo=null; 
-						$rojo=null;
-						$verde='success'; 
-					}
-					// DE 1 A 3 PAGARÉS VENCIDOS  //
-					elseif ($NumVencidos>=1 AND $NumVencidos<=3) {
-						$amarillo='warning'; 
-						$rojo=null;
-						$verde=null;
-					}
-					// MÁS DE 3 PAGARÉS VENCIDOS //
-					elseif ($NumVencidos>=4) {
-						$amarillo=null; 
-						$rojo='danger';
-						$verde=null;
-					}
-
-					while ($pagos=$doc->fetch_object()) {
+					$i=0;
+					while ($pagos = $doc->fetch_object()) {
+						if ($i==0) {
+							$ultimo = $pagos->pag_fecha;
+						}
+						$i++;
 						$Npagos += $pagos->pag_pago;
 					}
-					
-					
-				}else {
-					// DE 1 A 3 PAGARÉS VENCIDOS  //
-				//	2016-02-08  >  2016-03-01 and 5 <=3          
-					if ($hoy>$fecha_mensu AND $NumPagares<=3) {
-						$amarillo='warning'; 
-						$rojo=null;
-						$verde=null; 
-					}
-					// MÁS DE 3 PAGARÉS VENCIDOS //
-					elseif ($hoy>$fecha_mensu AND $NumPagares>=4) {
-						$amarillo=null; 
-						$rojo='danger';
-						$verde=null; 
-					}
+				}
+				
+				$ultimopago =date_create($ultimo);
+				$hoy = date_create(date('Y-m-d'));
+				$interval = date_diff($hoy,$ultimopago);
+				$interval = $interval->format('%m');
+
+				$adeudo = $f->pre_costototal-$Npagos;
+				
+				if ($adeudo > 0) {
 					// CERO PAGARÉS VENCIDOS //
-					elseif($hoy < $fecha_mensu){
+					if ($interval==0) {
 						$amarillo=null; 
 						$rojo=null;
 						$verde='success'; 
-						$NumVencidos=0;
 					}
-
+					// DE 1 A 3 PAGARÉS VENCIDOS  //
+					elseif ($interval<=3) {
+						$amarillo='warning'; 
+						$rojo=null;
+						$verde=null;
+					}
+					// MÁS DE 3 PAGARÉS VENCIDOS //
+					elseif ($interval>=4) {
+						$amarillo=null; 
+						$rojo='danger';
+						$verde=null;
+					}
+				} else{
+					$verde=$amarillo=$rojo=null;
 				}
 
-				$adeudo = $f->pre_costototal-$Npagos;
 
 				echo "<tr class='alert alert-".$amarillo.$verde.$rojo." '>
 					<td>#".$f->pre_id."</td>
@@ -105,7 +94,7 @@ include("marcas.php");
 					<td>".$cli->cli_nombre." ".$cli->cli_apellido."</td>
 					<td>".$veh->ve_modelo." ".$mar->ma_nombre."</td>
 					<td>".$f->pre_nummensualidades." meses, ".$f->pre_numanualidades." anualidades</td>
-					<td>".$NumVencidos."</td>
+					<td>".$interval."</td>
 					<td>$".number_format($adeudo,2)."</td>
 					<td><a href='?pagos&id=".$f->pre_id."' class='btn btn-info' >Realizar pagos o abonar</a></td>
 				</tr>";

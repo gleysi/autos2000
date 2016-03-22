@@ -31,13 +31,6 @@ if (isset($_POST['guardar'])) {
 	}
 	else{echo "<div class='alert alert-warning'>Por favor agregue todos los campos</div>";}
 }
-
-
-$fechainicial=date_create($presu->pre_fechapagmensualidades);
-$fechafinal= date_create(date('Y-m-d'));
-$interval= date_diff($fechafinal,$fechainicial);
-echo $interval->format('han pasado %m meses ');
-
 ?>
 <form class="col-xs-12" name="pago" method="post" >
     <div class="col-sm-6">
@@ -68,22 +61,23 @@ echo $interval->format('han pasado %m meses ');
 					<th>Número de pago:</th>
 					<th>Fecha de pago</th>
 					<th>Depósito</th>
-					<th></th>
+					<th>Imprimir</th>
 				</tr>
 				    <?php
-				    $i=1;
-				    $pa=$sql->Query("SELECT pag_fecha,pag_pago FROM pagos WHERE pre_id='".__($_GET['id'])."' ORDER BY pag_fecha DESC ");
+				    
+				    $pa=$sql->Query("SELECT pag_id,pag_fecha,pag_pago FROM pagos WHERE pre_id='".__($_GET['id'])."' ORDER BY pag_fecha DESC ");
 				    if ($pa->num_rows>0) {
+				    	$i=$pa->num_rows;
 				    	while ($p=$pa->fetch_object()) {
 				    		?>
 							<tr>
 				    		<td>#<?php echo $i;?></td>
 							<td><?php echo $p->pag_fecha; ?> </td>
 							<td><?php echo $p->pag_pago;?></td>
-							<td><button>Recibo de pago</button></td>
+							<td><a href="pagares.php?id=<?php echo $p->pag_id; ?>&num=<?php echo $i;?>" target="_brank">Pagarés</a></td>
 				    		</tr>
 				    		<?php
-				    		$i++;
+				    		$i--;
 				    	}
 				    }
 				    ?>
@@ -96,7 +90,7 @@ echo $interval->format('han pasado %m meses ');
 				<table class="table table-striped">
 					<tr>
 						<td>Fecha de pago</td>
-						<td> <input class="form-control" type="date" name="pag_fecha"></td>
+						<td> <input class="form-control" type="date" name="pag_fecha" value="<?php echo date('Y-m-d');?>"></td>
 					</tr>
 					<tr>
 						<td>Depósito</td>
