@@ -23,7 +23,7 @@ if (isset($_GET['e'])){
 // EDITAR USUARIO
 if (isset($_POST['editar'])) {
 		if($_POST['usu_login']!='' AND  $_POST['usu_pass']!='' AND  $_POST['usu_nombre']!='' AND  $_POST['usu_estado']!=''){
-			$edit=$sql->Query("UPDATE usuarios SET suc_id='1', usu_login='".addslashes(strip_tags($_POST['usu_login']))."', usu_pass='".addslashes(strip_tags(md5($_POST['usu_pass'])))."', usu_nombre='".addslashes(strip_tags($_POST['usu_nombre']))."', usu_estado='".addslashes(strip_tags($_POST['usu_estado']))."', usu_apellidos='".addslashes(strip_tags($_POST['usu_apellidos']))."' WHERE usu_id='".addslashes(strip_tags($_GET['c']))."' ");
+			$edit=$sql->Query("UPDATE usuarios SET suc_id='1', usu_login='".addslashes(strip_tags($_POST['usu_login']))."', usu_pass='".addslashes(strip_tags(md5($_POST['usu_pass'])))."', usu_nombre='".addslashes(strip_tags($_POST['usu_nombre']))."', usu_estado='".addslashes(strip_tags($_POST['usu_estado']))."', usu_apellidos='".addslashes(strip_tags($_POST['usu_apellidos']))."' WHERE usu_id='".addslashes(strip_tags($_POST['c']))."' ");
 			echo "<div class='alert alert-success'>Usuario Editado</div>";
 		}else{
 			echo "<div class='alert alert-danger'>Por favor llene todos los campos</div>";
@@ -47,7 +47,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 	<h2><?php echo $titulo;?></h2>
 	<form action="?usuarios" method="post" id="formatable">
 		<div class="form-group">
-		    <label>Usuario</label>
+		    <label>Usuario</label> <input type="hidden" name="c" value="<?php if($show) echo $sel->usu_id; ?>">
 		    <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Usuario" name="usu_login" value="<?php if($show) echo $sel->usu_login; ?>">
 	    </div>
 	    <div class="form-group">
@@ -84,12 +84,38 @@ else  {
 				if ($usu->num_rows>0) {
 					while ($u=$usu->fetch_object()) {
 						$estado=($u->usu_estado==1)?'Activo':'Inactivo';
-						echo "<tr> <td>".$u->usu_id."</td> <td>".$u->usu_nombre."</td> <td>".$u->suc_id."</td> <td>".$estado."</td> <td> <a href='/admin.php?usuarios&c=".$u->usu_id."' class='btn btn-warning'>Editar</a> <a href='/admin.php?usuarios&e=".$u->usu_id."' class='btn btn-danger'>Eliminar</a></td> </tr>";
+						echo "<tr> <td>".$u->usu_id."</td> <td>".$u->usu_nombre."</td> <td>".$u->suc_id."</td> <td>".$estado."</td> <td> <a href='".$_SERVER['REQUEST_URI']."&c=".$u->usu_id."' class='btn btn-warning'>Editar</a> <button  class='borrar btn btn-danger' data-name='".$u->usu_nombre."' data-alt='".$_SERVER['REQUEST_URI']."&e=".$u->usu_id."' data-toggle='modal' data-target='#myModal'  >Eliminar</button></td> </tr>";
 					}
 				}
 			?>
 		</table>
 	</div>
+
+	<script type="text/javascript">
+	$(".borrar").click(function () {
+		$('.modal-body').html('Está usted seguro de eliminar al usuaio <b>'+$(this).attr('data-name')+'</b>');
+		$('#borrau').attr('href',$(this).attr('data-alt'));
+	});
+	</script>
+
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="myModalLabel">Confirmación de eliminar usuario</h4>
+	      </div>
+	      <div class="modal-body">
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+	        <a href="" type="button" id="borrau" class="btn btn-primary">Eliminar</a>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
 	<?php
 }
 ?>

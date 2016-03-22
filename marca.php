@@ -1,5 +1,4 @@
 <?php
-session_start(); 
 require_once("../config.php");
 if (!isset($_SESSION['userAdmn'])) {
 	header('Location: /');
@@ -44,7 +43,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 	}
 	?>
 	<h2><?php echo $titulo;?></h2>
-	<form action="<?php echo $_SERVER['REQUEST_URI'];?>" method="post" id="formatable">
+	<form action="" method="post" id="formatable">
 		<div class="form-group">
 		    <label>Marca</label>
 		    <input type="text" class="form-control"  placeholder="Nombre de la Marca" name="ma_nombre" value="<?php echo $sel->ma_nombre; ?>">
@@ -63,11 +62,35 @@ else  {
 			<?php
 				if ($usu->num_rows>0) {
 					while ($u=$usu->fetch_object()) {
-						echo "<tr> <td>".$u->ma_id."</td> <td>".$u->ma_nombre."</td> <td> <a href='/admin.php?marca&c=".$u->ma_id."' class='btn btn-warning'>Editar</a> <a href='/admin.php?marca&e=".$u->ma_id."' class='btn btn-danger'>Eliminar</a></td> </tr>";
+						echo "<tr> <td>".$u->ma_id."</td> <td>".$u->ma_nombre."</td> <td> <a href='".$_SERVER['REQUEST_URI']."&c=".$u->ma_id."' class='btn btn-warning'>Editar</a> <button data-alt='".$_SERVER['REQUEST_URI']."&e=".$u->ma_id."' data-name='".$u->ma_nombre."' class='borrar btn btn-danger' data-toggle='modal' data-target='#myModal'>Eliminar</button></td> </tr>";
 					}
 				}
 			?>
 		</table>
+	</div>
+	<script type="text/javascript">
+	$(".borrar").click(function () {
+		$('.modal-body').html('Está usted seguro de eliminar al usuaio <b>'+$(this).attr('data-name')+'</b>');
+		$('#borrau').attr('href',$(this).attr('data-alt'));
+	});
+	</script>
+
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="myModalLabel">Confirmación de eliminar usuario</h4>
+	      </div>
+	      <div class="modal-body">
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+	        <a href="" type="button" id="borrau" class="btn btn-primary">Eliminar</a>
+	      </div>
+	    </div>
+	  </div>
 	</div>
 	<?php
 }

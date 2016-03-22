@@ -1,11 +1,10 @@
 <?php
-session_start(); 
 require_once("../config.php");
 if (!isset($_SESSION['userAdmn'])) {
 	header('Location: /');
 }
 include("marcas.php");
-
+$show=false;
 // AGREGAR COMPRA
 if (isset($_POST['guardar'])) {
 	// PROVEEDOR
@@ -58,7 +57,6 @@ if (isset($_GET['e'])){
 	if ($_GET['e']!='') {
 		$eli=$sql->Query("DELETE FROM compra WHERE com_id='".addslashes(strip_tags($_GET['e']))."' ");
 		echo "<div class='alert alert-success'>Compra eliminada</div>";
-		header('Location: /admin.php?compras');
 	}
 }
 
@@ -110,10 +108,10 @@ if (isset($_POST['editar'])) {
 	echo '<div class="alert alert-success" role="alert">Compra de unidad editada exitosamente<br><a href="/imprimir.php" target="_blank" class="btn btn-info">Imprimir</a> </div>';
 }
 
-
 if (isset($_GET['a']) OR isset($_GET['c']) ){
-
+	
 	if (isset($_GET['c'])) {
+		$show=true;
 		$titulo='Editar Compra';
 		$name='editar';
 		$sel=$sql->Query("SELECT * FROM compra WHERE com_id='".addslashes(strip_tags($_GET['c']))."' ");
@@ -129,8 +127,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 			// fetch de los atributos del vehiculo
 			$att=$sql->Query("SELECT * FROM vehiculos_attr WHERE ve_id='".$sel->ve_id."' ");
 			if($att->num_rows>0){$att=$att->fetch_object(); }
-
-
+			
 		}  else { echo "<div class='alert alert-danger'>Compra no existe</div"; return; }
 	}else{
 		$titulo='Agregar Compra';
@@ -138,9 +135,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 	}
 ?>
 <h1><?php echo $titulo;?></h1>
-<form class="col-xs-12" id="formatable" action="/admin.php?compras" method="post">
-
-
+<form class="col-xs-12" id="formatable" action="" method="post">
 	<table class="table table-striped">
 		<tr>
 				<td colspan="2"><b>Fecha:</b> <?php if (isset($sel->com_id)) echo "<input type='hidden' value='".$sel->com_id."' name='com_id' >"; ?> </td>
@@ -149,9 +144,9 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 		</tr>
 		<tr>
 				<td>Operación:</td>
-				<td><input name="com_fechaopera" type="text" readonly="readonly" value="<?php echo date('Y-m-d'); ?>" class="form-control"></td>
+				<td><input name="com_fechaopera" type="date"  value="<?php if($show) echo $sel->com_fechaopera; else  echo date('Y-m-d'); ?>" class="form-control"></td>
 				<td>Registro:</td>
-				<td><input name="com_fecharegi" type="date" value="<?php echo $sel->com_fecharegi; ?>" placeholder="<?php echo date('Y-m-d'); ?>" class="form-control"></td>
+				<td><input name="com_fecharegi" type="date" readonly="readonly" value="<?php if($show) echo $sel->com_fecharegi; else  echo date('Y-m-d'); ?>"  class="form-control"></td>
 				<td></td>
 				<td></td>
 		</tr>
@@ -172,10 +167,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 				?>
 			  </select>
 		    </td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
+			<td></td> <td></td> <td></td> <td></td>
 		</tr>
 		<tr class="prove">
 			<td>Nombre(s):</td>
@@ -183,9 +175,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 			<td>Apellido(s):</td>
 			<td colspan="2"><input id="prov_apellidos" name='prov_apellidos' type="text" class="form-control"></td>
 		</tr>
-		<tr class="prove">
-			<td colspan="6">Dirección:</td>
-		</tr>
+		<tr class="prove"> <td colspan="6">Dirección:</td> </tr>
 		<tr class="prove">
 			<td>Calle:</td>
 			<td><input id="prov_dir1" name="prov_dir1" type="text" class="form-control"></td>
@@ -211,7 +201,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 			<td><input id="prov_ifefolio" name="prov_ifefolio" type="text" class="form-control"></td>
 		</tr>
 		<tr>
-			<td colspan="6"><b>Unidad: <?php if (isset($vei->ve_id)) echo "<input type='hidden' value='".$vei->ve_id."' name='ve_id' >"; ?> </b></td>
+			<td colspan="6"><b>Unidad: <input type='hidden' value='<?php echo $vei->ve_id;?>' name='ve_id' > </b></td>
 		</tr>
 		<tr>
 			<td>Marca:</td>
@@ -232,7 +222,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 				<label id="otramarca" style="display:none">Por favor ingresa otra marca: <input name="ma_nombre"  class="form-control" ></label>
 			</td>
 			<td>Tipo:</td>
-			<td><input name="ve_tipo" value="<?php echo $vei->ve_tipo;?>" type="text" class="form-control"></td>
+			<td><input name="ve_tipo" value="<?php if($show) echo $vei->ve_tipo;?>" type="text" class="form-control"></td>
 			<td>Modelo:</td>
 			<td>
 				<select name="ve_modelo" class="form-control">
@@ -247,15 +237,15 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 		</tr>
 		<tr>
 			<td>No. de Motor:</td>
-			<td><input value="<?php echo $att->att_nummotor;?>" name="att_nummotor" type="text" class="form-control"></td>
+			<td><input value="<?php if($show) echo $att->att_nummotor;?>" name="att_nummotor" type="text" class="form-control"></td>
 			<td>No. de Serie:</td>
-			<td><input value="<?php echo $att->att_numserie;?>" name="att_numserie" type="text" class="form-control"></td>
+			<td><input value="<?php if($show) echo $att->att_numserie;?>" name="att_numserie" type="text" class="form-control"></td>
 			<td></td>
 			<td></td>
 		</tr>
 		<tr>
 			<td>Kilometraje:</td>
-			<td><input value="<?php echo $att->att_kilometraje;?>" name="att_kilometraje" type="text" class="form-control"></td>
+			<td><input value="<?php if($show) echo $att->att_kilometraje;?>" name="att_kilometraje" type="text" class="form-control"></td>
 			<td>Color (ext):</td>
 			<td>
 				<select name="att_colorext" class="form-control" onchange="veri_color(this.value)">
@@ -313,26 +303,26 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 				</select>
 			</td>
 			<td>Entidad de placas:</td>
-			<td><input value="<?php echo $att->att_placas;?>" type="text" class="form-control" name="att_placas"></td>
+			<td><input value="<?php if($show) echo $att->att_placas;?>" type="text" class="form-control" name="att_placas"></td>
 		</tr>
 		<tr>
-			<td  colspan="6"><b>Equipamiento: <?php if (isset($att->att_id)) echo "<input type='hidden' value='".$att->att_id."' name='att_id' >"; ?></b></td>
+			<td  colspan="6"><b>Equipamiento: <input type='hidden' value='<?php if($show) echo $att->att_id;?>' name='att_id' ></b></td>
 		</tr>
 		<tr>
 			<td>A/C:</td>
-			<td><label class="radito"> Si <input <?php if(isset($att->att_aire) AND $att->att_aire==1) echo 'checked'; ?> value="1" type="radio" name="att_aire" ></label><label class="radito"> No <input <?php if(isset($att->att_aire) AND $att->att_aire==0) echo 'checked'; ?> value="0" type="radio"  name="att_aire" ></label></td>
+			<td><label class="radito"> Si <input checked <?php if(isset($att->att_aire) AND $att->att_aire==1) echo 'checked'; ?> value="1" type="radio" name="att_aire" ></label><label class="radito"> No <input <?php if(isset($att->att_aire) AND $att->att_aire==0) echo 'checked'; ?> value="0" type="radio"  name="att_aire" ></label></td>
 			<td>Estereo:</td>
-			<td><label class="radito"> Si <input <?php if(isset($att->att_stereo) AND $att->att_stereo==1) echo 'checked'; ?> value="1" type="radio" name="att_stereo" ></label><label class="radito"> No <input  <?php if(isset($att->att_stereo) AND $att->att_stereo==0) echo 'checked'; ?> value="0" type="radio"  name="att_stereo" ></label></td>
+			<td><label class="radito"> Si <input checked <?php if(isset($att->att_stereo) AND $att->att_stereo==1) echo 'checked'; ?> value="1" type="radio" name="att_stereo" ></label><label class="radito"> No <input  <?php if(isset($att->att_stereo) AND $att->att_stereo==0) echo 'checked'; ?> value="0" type="radio"  name="att_stereo" ></label></td>
 			<td>CD:</td>
-			<td><label class="radito"> Si <input <?php if(isset($att->att_cd) AND $att->att_cd==1) echo 'checked'; ?> value="1" type="radio" name="att_cd" ></label><label class="radito"> No <input <?php if(isset($att->att_cd) AND $att->att_cd==0) echo 'checked'; ?> value="0" type="radio"  name="att_cd" ></label></td>
+			<td><label class="radito"> Si <input checked <?php if(isset($att->att_cd) AND $att->att_cd==1) echo 'checked'; ?> value="1" type="radio" name="att_cd" ></label><label class="radito"> No <input <?php if(isset($att->att_cd) AND $att->att_cd==0) echo 'checked'; ?> value="0" type="radio"  name="att_cd" ></label></td>
 		</tr>
 		<tr>
 			<td>Quemacocos:</td>
-			<td><label class="radito"> Si <input <?php if(isset($att->att_quemacocos) AND $att->att_quemacocos==1) echo 'checked'; ?> value="1" type="radio" name="att_quemacocos" ></label><label class="radito"> No <input <?php if(isset($att->att_quemacocos) AND $att->att_quemacocos==0) echo 'checked'; ?> value="0" type="radio"  name="att_quemacocos" ></label></td>
+			<td><label class="radito"> Si <input checked <?php if(isset($att->att_quemacocos) AND $att->att_quemacocos==1) echo 'checked'; ?> value="1" type="radio" name="att_quemacocos" ></label><label class="radito"> No <input <?php if(isset($att->att_quemacocos) AND $att->att_quemacocos==0) echo 'checked'; ?> value="0" type="radio"  name="att_quemacocos" ></label></td>
 			<td>Rines:</td>
-			<td><label class="radito"> Si <input <?php if(isset($att->att_rines) AND $att->att_rines==1) echo 'checked'; ?> value="1" type="radio" name="att_rines" ></label><label class="radito"> No <input <?php if(isset($att->att_rines) AND $att->att_rines==0) echo 'checked'; ?> value="0" type="radio"  name="att_rines" ></label></td>
+			<td><label class="radito"> Si <input checked <?php if(isset($att->att_rines) AND $att->att_rines==1) echo 'checked'; ?> value="1" type="radio" name="att_rines" ></label><label class="radito"> No <input <?php if(isset($att->att_rines) AND $att->att_rines==0) echo 'checked'; ?> value="0" type="radio"  name="att_rines" ></label></td>
 			<td>Bolsas de aire:</td>
-			<td><label class="radito"> Si <input <?php if(isset($att->att_bolsasaire) AND $att->att_bolsasaire==1) echo 'checked'; ?> value="1" type="radio" name="att_bolsasaire" ></label><label class="radito"> No <input <?php if(isset($att->att_bolsasaire) AND $att->att_bolsasaire==0) echo 'checked'; ?> value="0" type="radio"  name="att_bolsasaire" ></label></td>
+			<td><label class="radito"> Si <input checked <?php if(isset($att->att_bolsasaire) AND $att->att_bolsasaire==1) echo 'checked'; ?> value="1" type="radio" name="att_bolsasaire" ></label><label class="radito"> No <input <?php if(isset($att->att_bolsasaire) AND $att->att_bolsasaire==0) echo 'checked'; ?> value="0" type="radio"  name="att_bolsasaire" ></label></td>
 		</tr>
 		<tr>
 			<td>Número de cilindros:</td>
@@ -377,11 +367,10 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 		</tr>
 		<tr>
 		    <td>Fecha (fac) original:</td>
-			<td><input value="<?php if(isset($att->att_fechafacoriginal)) echo $att->att_fechafacoriginal; ?>" type="date" name="att_fechafacoriginal" class="form-control"></td>
+			<td><input value="<?php if(isset($att->att_fechafacoriginal)) echo $att->att_fechafacoriginal; else echo date('Y-m-d'); ?>" type="date" name="att_fechafacoriginal" class="form-control"></td>
 			<td>Folio: (fac) original: </td>
-			<td><input value="<?php if(isset($att->att_foliooriginal)) echo $att->att_foliooriginal; ?>" type="text" name="att_foliooriginal" class="form-control"></td>
+			<td><input value="<?php if(isset($att->att_foliooriginal)) echo $att->att_foliooriginal; else echo date('Y-m-d'); ?>" type="text" name="att_foliooriginal" class="form-control"></td>
 			<td colspan="2"></td>
-			
 		</tr>
 		<tr>
 			<td>Tenencias pagadas hasta:</td>
@@ -458,11 +447,34 @@ else  {
 						$pro=$sql->Query("SELECT prov_nombre FROM proveedores WHERE prov_id='".$u->pro_id."'  ");
 						if ($pro->num_rows>0) {$pro=$pro->fetch_object(); $provas=$pro->prov_nombre; } else $provas='No asignada';
 
-						echo "<tr> <td>".$u->com_id."</td> <td>".$u->com_fecharegi."</td> <td>".$mark."</td> <td>".$provas."</td>   <td> <a href='/admin.php?compras&c=".$u->com_id."' class='btn btn-warning'>Editar</a> <a href='/admin.php?compras&e=".$u->com_id."' class='btn btn-danger'>Eliminar</a></td> </tr>";
+						echo "<tr> <td>".$u->com_id."</td> <td>".$u->com_fecharegi."</td> <td>".$mark."</td> <td>".$provas."</td>   <td> <a href='".$_SERVER['REQUEST_URI']."&c=".$u->com_id."' class='btn btn-warning'>Editar</a> <button data-name='".$u->com_id."' data-alt='".$_SERVER['REQUEST_URI']."&e=".$u->com_id."' data-toggle='modal' data-target='#myModal' class='borrar btn btn-danger'>Eliminar</button></td> </tr>";
 					}
 				}
 			?>
 		</table>
+	</div>
+	<script type="text/javascript">
+	$(".borrar").click(function () {
+		$('.modal-body').html('Está usted seguro de eliminar la compra #<b>'+$(this).attr('data-name')+'</b>');
+		$('#borrau').attr('href',$(this).attr('data-alt'));
+	});
+	</script>
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="myModalLabel">Confirmación de eliminar compra</h4>
+	      </div>
+	      <div class="modal-body">
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+	        <a href="" type="button" id="borrau" class="btn btn-primary">Eliminar</a>
+	      </div>
+	    </div>
+	  </div>
 	</div>
 	<?php
 }
@@ -507,6 +519,4 @@ $( document ).ready(function() {
 	function veri_color2 (v) {
 		if (v==0)  $("#otrocolor2").show();  else $("#otrocolor2").hide();
 	}
-	
-
 </script>
