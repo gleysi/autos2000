@@ -4,6 +4,7 @@ if (!isset($_SESSION['userAdmn'])) {
 	header('Location: /');
 }
 include("marcas.php");
+//Convertir imagenes convert($imagen,$calidad,$width,$formato,$retorno) //
 
 $_POST['att_fotos']=1; // eliminar cuanod se suban fotos
 // agregar vehiculo
@@ -11,10 +12,45 @@ if (isset($_POST['guardar'])) {
 	$sql->Query("INSERT INTO vehiculos (ve_id,suc_id,ve_fechaad,ve_marca,ve_tipo,ve_modelo) VALUES (NULL,'".__($_POST['suc_id'])."','".date('Y-m-d')."','".__($_POST['marca'])."','".__($_POST['tipo'])."','".__($_POST['modelo'])."')");
 	$vid=$sql->insert_id;
 	
-	$sql->Query("INSERT INTO vehiculos_attr  VALUES (NULL, '".$vid."', '".__($_POST['att_colorext'])."', '".__($_POST['colorint'])."', '".__($_POST['vestiduras'])."', '".__($_POST['transmision'])."', '".__($_POST['nummotor'])."', '".__($_POST['numserie'])."', '".__($_POST['att_placas'])."', '".__($_POST['att_placasenti'])."', '".__($_POST['kilometraje'])."', '".__($_POST['att_tenencias'])."', '".__($_POST['att_equipamiento'])."', '".__($_POST['aire'])."', '".__($_POST['stereo'])."', '".__($_POST['cd'])."', '".__($_POST['quemacocos'])."', '".__($_POST['rines'])."', '".__($_POST['bolsasaire'])."', '".__($_POST['cilindros'])."', '".__($_POST['vidrios'])."', '".__($_POST['seguros'])."', '".__($_POST['att_qty'])."', '".__($_POST['comentarios'])."', '".__($_POST['fechafac'])."', '".__($_POST['expedida'])."', '".__($_POST['folio'])."', '".__($_POST['att_vu'])."', '".__($_POST['att_fotos'])."', '".__($_POST['att_preciocompra'])."', '".__($_POST['att_precioventa'])."', '".__($_POST['att_preciooferta'])."', '".__($_POST['att_disponible'])."', '".__($_POST['att_web'])."')");
-		echo "<div class='alert alert-success'>Vehículo Agregado</div>";
-}
+	$sql->Query("INSERT INTO vehiculos_attr  VALUES (NULL, '".$vid."', '".__($_POST['att_colorext'])."', '".__($_POST['colorint'])."', '".__($_POST['vestiduras'])."', '".__($_POST['transmision'])."', '".__($_POST['nummotor'])."', '".__($_POST['numserie'])."', '".__($_POST['att_placas'])."', '".__($_POST['att_placasenti'])."', '".__($_POST['kilometraje'])."', '".__($_POST['att_tenencias'])."', '".__($_POST['att_equipamiento'])."', '".__($_POST['aire'])."', '".__($_POST['stereo'])."', '".__($_POST['cd'])."', '".__($_POST['quemacocos'])."', '".__($_POST['rines'])."', '".__($_POST['bolsasaire'])."', '".__($_POST['cilindros'])."', '".__($_POST['vidrios'])."', '".__($_POST['seguros'])."', '".__($_POST['att_qty'])."', '".__($_POST['comentarios'])."', '".__($_POST['fechafac'])."', '".__($_POST['attr_fechafacoriginal'])."', '".__($_POST['expedida'])."', '".__($_POST['folio'])."', '".__($_POST['attr_foliooriginal'])."', '".__($_POST['att_vu'])."', '".__($_POST['att_fotos'])."', '".__($_POST['att_preciocompra'])."', '".__($_POST['att_precioventa'])."', '".__($_POST['att_preciooferta'])."', '".__($_POST['att_disponible'])."', '".__($_POST['att_web'])."')");
+	
+	$destino = "/home/autosmx/public_html/media/fotos/".date("Y/m/");
+	if(!file_exists($destino)) {
+    	mkdir($destino, 0777, tru);
+	}	
+	foreach ($_FILES["f"]["error"] as $i => $error) {
+      	move_uploaded_file($_FILES['f']['tmp_name'][$i],$destino.$_FILES['f']['name'][$i]);
+    	$tipo = $_FILES['f']['type'][$i];
+      	if (($tipo == "image/gif") ||  ($tipo == "image/jpeg") || ($tipo=="image/png")) {
+     	   	if(file_exists($destino.$_FILES['f']['name'][$i])) {
+            	$sql->Query("INSERT INTO fotos (ve_id) VALUES ('".$vid."')");
+         		$idfoto=$sql->insert_id;
+         		$thu=$idfoto.'_100.jpg';
+         		$med=$idfoto.'_400.jpg';
+            	$big=$idfoto.'_800.jpg';
+            	$ori=$idfoto.'.jpg';
+            	convert($destino.$_FILES['f']['name'][$i],75,100,"jpg",$destino.$thu);//Thumbnail
+            	convert($destino.$_FILES['f']['name'][$i],75,400,"jpg",$destino.$med);//Mediana
+            	convert($destino.$_FILES['f']['name'][$i],75,800,"jpg",$destino.$big);//Big
+            	convert($destino.$_FILES['f']['name'][$i],100,0,"jpg",$destino.$ori);//Original
+         		unlink($destino.$_FILES['f']['name'][$i]);
+         	}
+    	}
+   	}	
 
+	echo "<div class='alert alert-success'>Vehículo Agregado</div>";
+}
+// ELIMINAR FOTO DE VEHICULO
+if(isset($_GET['del'])) {
+	$fecha = $sql->Query("SELECT ve_fechaad FROM vehiculos WHERE ve_id='".addslashes(strip_tags($_GET['c']))."'");
+	$f = $fecha->fetch_object();
+	$sql->Query("DELETE FROM fotos WHERE id ='".addslashes(strip_tags($_GET['del']))."'");
+	unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del'].".jpg");
+	unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_100.jpg");
+	unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_400.jpg");
+	unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_800.jpg");
+	echo "<div class='alert alert-success'>Fotografia eliminada</div>";
+}
 // ELIMINAR vehiculo
 if (isset($_GET['e'])){
 	if ($_GET['e']!='') {
@@ -56,7 +92,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 	}
 ?>
 <h1><?php echo $titulo;?></h1>
-<form class="col-xs-12" id="formatable" action="" method="post">
+<form class="col-xs-12" id="formatable" action="" method="post" enctype="multipart/form-data">
 	<table class="table table-striped">
 			<tr>
 				<td colspan="6"><b>Número económico</b><input type="hidden" value="<?php echo __($_GET['c']); ?>" name="ve_id"></td>
@@ -208,16 +244,51 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 			<tr>
 				<td>Fecha (fac):</td>
 				<td><input type="date" name="fechafac" class="form-control" value="<?php if($feve) echo $att->att_fechafac;?>"></td>
+				<td>Fecha (factura original):</td>
+				<td><input type="date" name="attr_fechafacoriginal" class="form-control" value="<?php if($feve) echo $att->attr_fechafacoriginal;?>"></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>	
 				<td>Folio (fac):</td>
 				<td><input type="text" name="folio" class="form-control" value="<?php if($feve) echo $att->att_folio;?>"></td>
+				<td>Folio (factura original):</td>
+				<td><input type="text" name="attr_foliooriginal" class="form-control" value="<?php if($feve) echo $att->attr_foliooriginal;?>"></td>
 				<td>Expedida por:</td>
 				<td><input type="text" name="expedida" class="form-control" value="<?php if($feve) echo $att->att_expedida;?>"></td>
 			</tr>
 			<tr> <td colspan="6"><b>Fotografias</b></td> </tr>
 			<tr>
 				<td>Subir fotografias </td>
-				<td colspan="2"> <input type="file" name="fotos"><br> <input type="file"><br> <input type="file"></td>
-				<td colspan="3"></td>
+				<td colspan="2"> 
+					<input type="file" name="f[]" class="form-control input-md" multiple="" accept=".jpg,.jpeg,.png">
+				</td>
+				<td colspan="3">
+					<style>
+					.delfoto {
+						position: absolute;
+					    top: 0;
+					    right: 15px;
+					    width: 30px;
+					    background: rgba(255, 255, 255, 0.79);
+					}
+					.delfoto img {
+						width: 100%;
+					}
+					</style>
+					<?php 
+					if(isset($_GET['c'])) {
+						$foto = $sql->Query("SELECT id FROM fotos WHERE ve_id='".$sel->ve_id."'");
+						$date = $sel->ve_fechaad;
+						if($foto->num_rows>0) {
+							while ($f = $foto->fetch_object()) {
+								echo '<div class="col-sm-3"><img src="'.MEDIA."/fotos/".date("Y/m/",strtotime($date)).$f->id.'_100.jpg" style="width:100%;margin-right:5px;"> <a href="?car&c='.$_GET['c'].'&del='.$f->id.'" class="delfoto"><img src="'.MEDIA.'/iconos/delete.png"></a></div>';
+								//$fotos[$f->id] =  MEDIA."/fotos/".date("Y/m/",strtotime($date)).$f->id."_".$w.".jpg";
+							}
+						}
+					}
+					?>
+				</td>
 			</tr>
 			<tr>
 				<td>Precio compra:</td>

@@ -60,7 +60,7 @@ if (isset($_POST['ve_id'])) {
 	if ($ve->num_rows>0) {
 		$ve=$ve->fetch_object();
 
-		$att=$sql->Query("SELECT att_vu FROM vehiculos_attr WHERE ve_id='".__($_POST['ve_id'])."' ");
+		$att=$sql->Query("SELECT att_vu,att_precioventa FROM vehiculos_attr WHERE ve_id='".__($_POST['ve_id'])."' ");
 		if($att->num_rows>0) $att=$att->fetch_object();
 
 		$a = array(
@@ -68,6 +68,7 @@ if (isset($_POST['ve_id'])) {
 			've_tipo' =>$ve->ve_tipo, 
 			've_modelo' =>$ve->ve_modelo, 
 			'att_vu' =>$att->att_vu,  
+			'att_precioventa' =>$att->att_precioventa 
 		);
 	echo  json_encode($a);
 	return;
