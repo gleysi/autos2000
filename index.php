@@ -4,29 +4,31 @@ require_once("../config.php");
 if(isset($_GET["logout"])) {
       session_destroy(); 
 }
-$error=$incativo=false;
+$error=$incativo=$verificarp=false;
 if(isset($_POST['user']) && $_POST['pass']) { 
             $pass=md5($_POST['pass']);
-            $dato=$sql->Query("SELECT * FROM usuarios WHERE usu_login='".addslashes(strip_tags($_POST['user']))."' AND usu_pass='".addslashes(strip_tags($pass))."' ");
-            if($dato->num_rows!=0) {
-               $d=$dato->fetch_object();
+            if ($_POST['pass'] == $_POST['verificarp']) {
+               $dato=$sql->Query("SELECT * FROM usuarios WHERE usu_login='".addslashes(strip_tags($_POST['user']))."' AND usu_pass='".addslashes(strip_tags($pass))."' ");
+               if($dato->num_rows!=0) {
+                  $d=$dato->fetch_object();
 
-               $suc=$sql->Query("SELECT * FROM sucursales WHERE suc_id='".__($d->suc_id)."' ");
-               if($suc->num_rows>0) $suc=$suc->fetch_object();
+                  $suc=$sql->Query("SELECT * FROM sucursales WHERE suc_id='".__($d->suc_id)."' ");
+                  if($suc->num_rows>0) $suc=$suc->fetch_object();
 
-               if ($d->usu_estado==0) {
-                 $incativo= true;
-               }else{
-                  $_SESSION['idUsr'] = $d->usu_id;
-                  $_SESSION['userAdmn'] = $_POST['user'];
-                  $_SESSION['alias'] = $d->usu_nombre;
-                  $_SESSION['sucursalid'] = $d->suc_id;
-                  $_SESSION['sucursal'] = $suc->suc_nombre;
-                  $_SESSION['apellidos'] = $d->usu_apellidos;
-                   Header("Location: admin.php");
-               }
-               
-            } else  $error=true;
+                  if ($d->usu_estado==0) {
+                    $incativo= true;
+                  }else{
+                     $_SESSION['idUsr'] = $d->usu_id;
+                     $_SESSION['userAdmn'] = $_POST['user'];
+                     $_SESSION['alias'] = $d->usu_nombre;
+                     $_SESSION['sucursalid'] = $d->suc_id;
+                     $_SESSION['sucursal'] = $suc->suc_nombre;
+                     $_SESSION['apellidos'] = $d->usu_apellidos;
+                      Header("Location: admin.php");
+                  }
+                  
+               } else  $error=true;
+            }else  $verificarp=true;
 }
 ?>
 <!DOCTYPE html>
@@ -55,11 +57,13 @@ if(isset($_POST['user']) && $_POST['pass']) {
                  <?php
                   if ($error) {echo ' <div class="alert alert-danger" role="alert"><b>¡Error!</b> Favor de verificar tu usuario y contraseña.</div>'; } 
                   if($incativo) echo "<div class='alert alert-warning'>Usuario inactivo</div>";
+                  if($verificarp) echo "<div class='alert alert-warning'>Las contraseñas no coinciden, por favor vuelva a intentar.</div>";
                  ?>
                      <form class="form-signin" action="index.php" method="post">       
                         <h2 class="form-signin-heading">Login</h2>
-                        <input type="text" class="form-control input-sm" name="user" placeholder="Usuario" required="" autofocus=""><br>
-                        <input type="password" class="form-control input-sm" name="pass" placeholder="Contraseña" required="">      
+                        <input type="text" class="form-control input-sm" name="user" placeholder="Usuario" required autofocus><br>
+                        <input type="password" class="form-control input-sm" name="pass" placeholder="Contraseña" required><br> 
+                        <input type="password" class="form-control input-sm" name="verificarp" placeholder="Vuelva a escribir la contraseña" required>      
                         <br>
                         <button class="btn btn-sm btn-primary btn-block" type="submit">Entrar</button>   
                      </form>
