@@ -15,7 +15,7 @@ function unidad(ve_id){
                   $(".att_precioventa").val(response.att_precioventa); 
               }
     });
-    setTimeout(function() { costototal();}, 10);
+    setTimeout(function() { costototal();}, 2000);
    // costototal();
 }
 
