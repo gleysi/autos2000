@@ -6,14 +6,67 @@ if (!isset($_SESSION['userAdmn'])) {
 }
 include("marcas.php");
 include("num2letras.txt");
- setlocale (LC_TIME, "es_ES");
-//echo "<pre>";
-//print_r($_SESSION);
-//echo "</pre>";
+setlocale (LC_TIME, "es_ES");
 
-//echo $_SESSION['compra']['prov_id'];
-//$sucursal=$sql->Query("SELECT * FROM sucursales WHERE suc_id='".__($_SESSION['compra']['suc_id'])."' ");
-//if( $sucursal->num_rows>0) { $sucursal=$sucursal->fetch_object(); }
+if (isset($_GET['ven_id'])) {
+  // venta
+  $venta = $sql->Query("SELECT * FROM ventas WHERE ven_id='".__($_GET['ven_id'])."' ");
+  if ($venta->num_rows>0) {
+    $venta = $venta->fetch_object();
+
+    // avale
+    $aval = $sql->Query("SELECT * FROM avales WHERE av_id='".$venta->av_id."' ");
+    if ($aval->num_rows>0) {
+      $aval = $aval->fetch_object();
+      $domaval = explode('|', $aval->av_dom);
+    }
+
+    // sucursal/vendedor
+    $suc = $sql->Query("SELECT * FROM sucursales WHERE suc_id='".$venta->suc_id."' ");
+    if ($suc->num_rows>0) {
+      $suc = $suc->fetch_object();
+      $usu = $sql->Query("SELECT * FROM usuarios WHERE suc_id='".$suc->suc_id."' ");
+      if ($usu->num_rows>0) {
+        $usu = $usu->fetch_object();
+      }
+    }
+    // cliente
+    $cliente = $sql->Query("SELECT * FROM clientes WHERE cli_id='".$venta->cli_id."' ");
+    if ($cliente->num_rows>0) {
+      $cliente = $cliente->fetch_object();
+      $domi = explode('|', $cliente->cli_dom);
+    }
+    // presupuesto 
+    $presu = $sql->Query("SELECT * FROM presupuesto WHERE ven_id='".$venta->ven_id."' ");
+    if ($presu->num_rows>0) {
+      $presu = $presu->fetch_object();
+    }
+
+    // vehiculo
+    $vehicu = $sql->Query("SELECT * FROM vehiculos WHERE ve_id='".$venta->ve_id."' ");
+    if ($vehicu->num_rows>0) {
+      $vehicu = $vehicu->fetch_object();
+      // atributos vehiculo
+      $att = $sql->Query("SELECT * FROM vehiculos_attr WHERE ve_id='".$venta->ve_id."' ");
+      if ($att->num_rows>0) {
+        $att = $att->fetch_object();
+      }
+      // marca
+      $marca = $sql->Query("SELECT * FROM marcas WHERE ma_id='".$vehicu->ve_marca."' ");
+      if ($marca->num_rows>0) {
+        $marca = $marca->fetch_object();
+      }
+    }else echo "Vehiculo inexistente";
+    
+  }else {
+    echo "Venta inexistente";
+    return;
+  }
+
+}else{
+  echo "Venta inexistente";
+  return;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -43,9 +96,9 @@ include("num2letras.txt");
 	<input style="float: left;" type="button" onclick="window.print();" class="nover" value="Imprimir" />
 	   <p style="text-align:left"><img style=" width: 130px;"src="<?php echo MEDIA;?>/img/logo.jpg"></p>
 	   <h2  style="text-align:center">CONTRATO DE VENTA DE CRÉDITO</h2>	
-	   <p style="text-align: right;"><br><br>TORREÓN COAH. A 13 DE JUNIO DEL 2015</p>
+	   <p style="text-align: right;"><br><br>TORREÓN COAH. A <span class="text-uppercase"><?php echo strftime('%d de %B del %Y', strtotime(date('Y-m-d')));  ?></p>
 	   <p><br><br>
-	   		Contrato de compra-venta con reserva de dominio de vehículo usado, que celebran por una parte el Ing. Mauricio Eduardo Torres Nava, propietario de la negociación denominada Autos 2000. A quien en lo sucesivo se le denominará “El Vendedor” y por otra parte Christian Jorge Hernández Acosta, quien en lo sucesivo se le denominará “El Comprador”, al tenor de las siguientes declaraciones y cláusulas:<br><br>
+	   		Contrato de compra-venta con reserva de dominio de vehículo usado, que celebran por una parte el Ing. Mauricio Eduardo Torres Nava, propietario de la negociación denominada Autos 2000. A quien en lo sucesivo se le denominará “El Vendedor” y por otra parte <?php echo $cliente->cli_nombre." ".$cliente->cli_apellido; ?>, quien en lo sucesivo se le denominará “El Comprador”, al tenor de las siguientes declaraciones y cláusulas:<br><br>
      </p>
      <div class="col-xs-12 space">
        <div class="col-sm-1">I.</div>
@@ -75,7 +128,7 @@ include("num2letras.txt");
      <div class="col-xs-12 space">
        <div class="col-sm-1">V.</div>
        <div class="col-sm-11" >
-            Declara el comprador llamarse como ha quedado expreso en el rubro de este contrato, tener su domicilio en C. Gregorio A. García No. 1084 Col. Río 2000, en Torreón, Coah. y número telefónico (871) 7-22-29-28 y con Registro Federal de Causantes HEMS890623-RI9, que tiene capacidad jurídica para obligarse en los términos de este contrato.
+            Declara el comprador llamarse como ha quedado expreso en el rubro de este contrato, tener su domicilio en <?php echo $domi[0]." #".$domi[1]." ".$domi[2].", ".$cliente->cli_ciudad." ".$cliente->cli_estado." Tel: ".$cliente->cli_tel;  ?> y con Registro Federal de Causantes <?php echo $cliente->cli_rfc; ?>, que tiene capacidad jurídica para obligarse en los términos de este contrato.
        </div>
      </div>
      <div class="col-xs-12 space">
@@ -94,29 +147,29 @@ include("num2letras.txt");
      <p>
        <b>Primera:</b> El vendedor vende y el comprador compra el vehículo que a continuación se describe:
        <table width="250">
-         <tr> <td>Marca:</td> <td><b>Nissan</b></td> </tr>
-         <tr> <td>Tipo:</td> <td><b>X-Trail LE  </b></td> </tr>
-         <tr> <td>Modelo:</td> <td><b>2011</b></td> </tr>
-         <tr> <td>Serie:</td> <td><b>5N1HA1CBLVQ351623</b></td> </tr>
-         <tr> <td>Motor:</td> <td><b>5NP4352</b></td> </tr>
-         <tr> <td>Color:</td> <td><b>Blanco</b></td> </tr>
-         <tr> <td>Kilometraje:</td> <td><b> 80,000 km. </b></td> </tr>
+         <tr> <td>Marca:</td> <td><b><?php echo $marca->ma_nombre; ?></b></td> </tr>
+         <tr> <td>Tipo:</td> <td><b><?php echo $vehicu->ve_tipo;?></b></td> </tr>
+         <tr> <td>Modelo:</td> <td><b><?php echo $vehicu->ve_modelo;?></b></td> </tr>
+         <tr> <td>Serie:</td> <td><b><?php echo $att->att_numserie;?></b></td> </tr>
+         <tr> <td>Motor:</td> <td><b><?php echo $att->att_nummotor;?></b></td> </tr>
+         <tr> <td>Color:</td> <td><b><?php echo $colorext[$att->att_colorext]; ?></b></td> </tr>
+         <tr> <td>Kilometraje:</td> <td><b> <?php echo $att->att_kilometraje;?> km. </b></td> </tr>
        </table>
      </p>
-     <p>Observaciones acerca de las condiciones generales del vehículo: <b>Unidad usada, transmisión automática.</b></p>
+     <p>Observaciones acerca de las condiciones generales del vehículo: <b>Unidad usada, transmisión <?php echo $transmision[$att->att_transmision]; ?>.</b></p>
 	   <p> <b>Segunda:</b> El Vendedor en este acto exhibe al comprador la documentación en copia simple que ampara la propiedad del vehículo descrito en la cláusula anterior cerciorándose que dicha documentación corresponde fielmente al citado vehículo y se encuentra en regla, quedando en poder del vendedor la documentación original, hasta  en tanto no sea liquidado totalmente el precio pactado por tratarse de un <b>contrato bajo reserva de dominio.</b> </p>
      <hr>
      <p><b>Tercera:</b> El precio de compra-venta, lo han determinado de común acuerdo El Vendedor y El Comprador, sobre las siguientes bases:</p>
      <div class="col-xs-12 space">
          <table>
-           <tr> <td valign="top" width="20">A) </td><td> Precio de la unidad: <b>$205,000 (SON: DOSCIENTOS CINCO MIL PESOS 00/100 M.N.)</b></td></tr>
-           <tr><td valign="top" width="20">B) </td><td> Enganche: <b>$100,000 (SON CIEN MIL PESOS 00/100 M.N.)</b> Número de pagos: <b>1.</b></td></tr> 
-           <tr><td valign="top" width="20">C) </td><td> <b>36</b> Pagos <b>mensuales</b> por la cantidad de: <b>$3,248 (SON: TRES MIL DOSCIENTOS CUARENTA Y OCHO PESOS 00/100 M.N.),</b> los días 23 de cada mes. A los pagos realizados por adelantado, se les bonificará el 100% de interés, entregándose el último pagaré de la serie.</b>
-                              <br><b>3 </b>Pagos <b>anuales</b> por la cantidad de <b>$20,000 (SON: VEINTE MIL PESOS 00/100 M.N.).</b></td>
+           <tr> <td valign="top" width="20">A) </td><td> Precio de la unidad: <b>$<?php echo number_format($presu->pre_costototal,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_costototal)); ?>)</b></td></tr>
+           <tr><td valign="top" width="20">B) </td><td> Enganche: <b>$<?php echo number_format($presu->pre_enganche,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_enganche)); ?>)</b> Número de pagos: <b><?php echo $presu->pre_numpagenganche;?>.</b></td></tr> 
+           <tr><td valign="top" width="20">C) </td><td> <b><?php echo $presu->pre_nummensualidades;?></b> Pagos <b>mensuales</b> por la cantidad de: <b>$<?php echo number_format($presu->pre_menusalidades,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_menusalidades)); ?>),</b> los días <?php echo date('d',strtotime($presu->pre_fechapagmensualidades));?> de cada mes. A los pagos realizados por adelantado, se les bonificará el 100% de interés, entregándose el último pagaré de la serie.</b>
+                              <br><b><?php echo $presu->pre_numanualidades;?> </b>Pagos <b>anuales</b> por la cantidad de <b>$<?php echo number_format($presu->pre_anualidades,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_anualidades)); ?>).</b></td>
            </tr> 
            <tr><td valign="top" width="20">D) </td><td> <span class='underline'>Al llegar al vencimiento de la anualidad (en caso de existir en el financiamiento), ésta se tendrá que liquidar primero, antes de seguir con los pagos por adelantado, aún en el caso de adelanto de mensualidades.</span> </td> </tr> 
            <tr><td valign="top" width="20">E) </td><td>Forma de pago:<b>Efectivo.</b> </td></tr> 
-           <tr><td valign="top" width="20">F) </td><td>Fecha de entrega del vehículo: <b>10 de noviembre de 2015.</b></td></tr>
+           <!--<tr><td valign="top" width="20">F) </td><td>Fecha de entrega del vehículo: <b>10 de noviembre de 2015.</b></td></tr>-->
            <tr><td valign="top" width="20">G) </td><td>Intereses moratorios al <b>7% mensual</b> en caso de retraso en el pago.</td></tr> 
          </table>
       </div>
@@ -136,18 +189,19 @@ include("num2letras.txt");
       <p class="space"><b>Décima.</b> Autoriza el Comprador que al vencimiento de 1 (UN) pagaré, el vehículo quedará en calidad de depósito en el domicilio del “Vendedor” hasta en tanto se ponga la cuenta al corriente en el plazo fijado por el Vendedor.</p>
       <p class="space"><b>Décima primera.</b> Para garantizar y asegurar el cumplimiento de todas y cada una de las obligaciones por el Comprador en el presente contrato se le constituye Fiador (a) del Comprador y se le obliga con éste al cumplimiento de dichas obligaciones y acepta expresamente que su responsabilidad no finaliza hasta que termine cualquier causa del presente contrato, como consecuencia de la obligación que contrae en la presente cláusula el Fiador conviene y se le obliga a firmar como avalista los pagarés expedidos por el Vendedor.</p>
       <table width="450" class="space">
-         <tr> <td  width="90">Fiador:</td> <td>Evaristo Vega de la Cruz.</td> </tr>
-         <tr> <td  width="90">Parentesco:</td> <td>Hermanos</td> </tr>
-         <tr> <td  width="90">Domicilio:</td> <td>Priv. Simón Bolivar #263 Col. Carolinas. En Torreón, Coah.</td> </tr>
-         <tr> <td  width="90">Teléfono:</td> <td>87-11-22-22-22</td> </tr> 
+         <tr> <td  width="90">Fiador:</td> <td><?php echo $aval->av_nombre." ".$aval->av_apellidos;?>.</td> </tr>
+         <tr> <td  width="90">Parentesco:</td> <td><?php echo $aval->av_parentezco?></td> </tr>
+         <tr> <td  width="90">Domicilio:</td> <td><?php echo $domaval[0]." #".$domaval[1]." ".$domaval[2].", ".$aval->av_ciudad." ".$aval->av_estado; ?></td> </tr>
+         <tr> <td  width="90">Teléfono:</td> <td><?php echo $aval->av_tel;?></td> </tr> 
+         <tr> <td  width="90">Celular:</td> <td><?php echo $aval->av_cel;?></td> </tr> 
       </table>
       <p class="space"><b>Décima segunda:</b> Para todos los efectos legales de este contrato, los contrayentes se someten a la competencia del la Procuraduría Federal del Consumidor y tribunales del lugar en que se haya suscrito en el presente contrato, se regirá por las disposiciones aplicables de la Ley de Protección al Consumidor.</p>
       <div class="col-xs-12">
           <div class="fir">Vendedor<br> Ing. Mauricio Eduardo Torres Nava</div>
-          <div class="fir">Comprador<br> Christian Jorge Hernández Acosta</div>
+          <div class="fir">Comprador<br> <?php echo $cliente->cli_nombre." ".$cliente->cli_apellido; ?></div>
       </div>
       <div class="col-xs-12">
-          <div class="fir">1er Fiador<br>Evaristo Vega de la Cruz</div>
+          <div class="fir">1er Fiador<br><?php echo $aval->av_nombre." ".$aval->av_apellidos;?></div>
           <div class="fir">2do Fiador</div>
       </div>
       <p class="col-xs-12 bottom">Contrato Registrado ante la Procuraduría Federal del Consumidor bajo el No. De registro 4882-2011 de fecha 20 de junio de 2011, emitido por el ciudadano Carlos Meneses Toribio y solo podrá ser utilizado por socios activos de la Asociación Nacional de Comerciantes en Automóviles y Camiones Usados, A.C., quedando estrictamente prohibido su uso por particulares o personas morales afiliados a la A.N.C.A., A.C.</p>

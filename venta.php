@@ -39,7 +39,6 @@ if (isset($_POST['guardar'])) {
 	
 	$pre_fpm=$_POST['pre_fpm1']; // asi se queda solo una fecha de cada mes   MENSUALIDADES
 	
-	
 	$pres=$sql->Query("INSERT INTO presupuesto VALUES (
 		NULL,
 		'".__($_POST['ve_id'])."',
@@ -63,15 +62,12 @@ if (isset($_POST['guardar'])) {
 		'".__($_POST['pre_costototal'])."',
 		'".__($_POST['pre_primerpago'])."') ");
 
-		//INSERTAR NUMERO DE PAGARES EN TABLA PAGOS //
-	    ////
-
 	echo '<div class="alert alert-success" role="alert">Venta de unidad guardada exitosamente<br>';
 	
 	if ($_POST['ven_tipo']==0) { // contado
 	  echo '<a href="contado.php?ven_id='.$ven_id.'" target="_blank" class="btn btn-info">Generar contrato de Compra-Venta-Contado</a>'; 
 	}else{// crédito
-	  echo '<a href="contratocp.php" target="_blank" class="btn btn-info">Generar contrato de Compra-Venta-Contado</a>'; 
+	  echo '<a href="contratocp.php?ven_id='.$ven_id.'" target="_blank" class="btn btn-info">Generar contrato de Compra-Venta-Crédito</a>'; 
 	}
 	//echo ' <a href="'.$_SERVER['REQUEST_URI'].'admin.php?cartadeposito" target="_blank" class="btn btn-info">Generar Carta de unidad de depósito</a> </div>';
 }
