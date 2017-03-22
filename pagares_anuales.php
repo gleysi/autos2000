@@ -140,7 +140,7 @@ if (isset($_GET['ven_id'])) {
 				<tr> <td colspan=7 height="20" align="center"><b>(SON: <?php echo strtoupper(num2letras($cuanto)); ?>  00/100 M.N.)</b></td> </tr>
 				<tr>
 					<td colspan=7>
-						Valor recibido a mi (nuestra) entera satisfacción. Este Pagaré forma parte del <?php echo $j." al ".$num;?> y todos están sujetos a la condición de<br>
+						Valor recibido a mi (nuestra) entera satisfacción. Este Pagaré forma parte del 1 al <?php echo $num; ?> y todos están sujetos a la condición de<br>
 						que, al no pagarse cualquiera de ellos a su vencimiento, serán exigibles todos los que le sigan en número, además de los ya <br>
 						vencidos, desde la fecha de su vencimiento de este documento hasta el día de su liquidación, causará intereses moratorios - <br>
 						del 7% mensual, pagadero en esta ciudad juntamente con el  principal
