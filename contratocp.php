@@ -14,11 +14,20 @@ if (isset($_GET['ven_id'])) {
   if ($venta->num_rows>0) {
     $venta = $venta->fetch_object();
 
+    if($venta->ven_tipo == 1) $ventipo = 'Crédito'; else $ventipo = 'Contado';
+
     // avale
     $aval = $sql->Query("SELECT * FROM avales WHERE av_id='".$venta->av_id."' ");
     if ($aval->num_rows>0) {
       $aval = $aval->fetch_object();
       $domaval = explode('|', $aval->av_dom);
+    }
+
+     // avale dos
+    $aval_dos = $sql->Query("SELECT * FROM avales WHERE av_id='".$venta->av_iddos."' ");
+    if ($aval_dos->num_rows>0) {
+      $aval_dos = $aval_dos->fetch_object();
+      $domaval_dos = explode('|', $aval_dos->av_dom);
     }
 
     // sucursal/vendedor
@@ -50,6 +59,11 @@ if (isset($_GET['ven_id'])) {
       $att = $sql->Query("SELECT * FROM vehiculos_attr WHERE ve_id='".$venta->ve_id."' ");
       if ($att->num_rows>0) {
         $att = $att->fetch_object();
+      }
+      // color
+      $colorextt = $sql->Query("SELECT * FROM colores WHERE co_id='".$att->att_colorext."' ");
+      if ($colorextt->num_rows>0) {
+        $colorextt = $colorextt->fetch_object();
       }
       // marca
       $marca = $sql->Query("SELECT * FROM marcas WHERE ma_id='".$vehicu->ve_marca."' ");
@@ -94,7 +108,7 @@ if (isset($_GET['ven_id'])) {
 
 	<div style="font-size: 12px;line-height: 15px;" class="container" id="impricom">
 	<input style="float: left;" type="button" onclick="window.print();" class="nover" value="Imprimir" />
-	   <p style="text-align:left"><img style=" width: 130px;"src="<?php echo MEDIA;?>/img/logo.jpg"></p>
+	   <p style="text-align:left"><img style=" width: 130px;"src="<?php echo MEDIA;?>/img/logo.png"></p>
 	   <h2  style="text-align:center">CONTRATO DE VENTA DE CRÉDITO</h2>	
 	   <p style="text-align: right;"><br><br>TORREÓN COAH. A <span class="text-uppercase"><?php echo strftime('%d de %B del %Y', strtotime(date('Y-m-d')));  ?></p>
 	   <p><br><br>
@@ -110,7 +124,7 @@ if (isset($_GET['ven_id'])) {
      <div class="col-xs-12 space">
        <div class="col-sm-1">II.</div>
        <div class="col-sm-11" >
-            Tener su domicilio en Av. Allende 601 ote.,  Col. Centro C.P. 27000 en Torreón, Coah. Con Registro Federal de Contribuyentes TONM-620405-PB9, teléfono (871) 2-67-54-76, con horario de atención de 9:00 a 14:00 y de 4:00 a 7:30 horas.
+            Tener su domicilio en Av. Allende 601 ote.,  Col. Centro C.P. 27000 en Torreón, Coah. Con Registro Federal de Contribuyentes TONM-620405-PB9, teléfono (871) 2-67-54-76, con horario de atención de 9:00 a 2:00pm y de 4:00pm a 7:30pm horas.
        </div>
      </div>
      <div class="col-xs-12 space">
@@ -152,7 +166,7 @@ if (isset($_GET['ven_id'])) {
          <tr> <td>Modelo:</td> <td><b><?php echo $vehicu->ve_modelo;?></b></td> </tr>
          <tr> <td>Serie:</td> <td><b><?php echo $att->att_numserie;?></b></td> </tr>
          <tr> <td>Motor:</td> <td><b><?php echo $att->att_nummotor;?></b></td> </tr>
-         <tr> <td>Color:</td> <td><b><?php echo $colorext[$att->att_colorext]; ?></b></td> </tr>
+         <tr> <td>Color:</td> <td><b><?php echo $colorextt->co_nombre; ?></b></td> </tr>
          <tr> <td>Kilometraje:</td> <td><b> <?php echo $att->att_kilometraje;?> km. </b></td> </tr>
        </table>
      </p>
@@ -164,13 +178,13 @@ if (isset($_GET['ven_id'])) {
          <table>
            <tr> <td valign="top" width="20">A) </td><td> Precio de la unidad: <b>$<?php echo number_format($presu->pre_costototal,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_costototal)); ?>)</b></td></tr>
            <tr><td valign="top" width="20">B) </td><td> Enganche: <b>$<?php echo number_format($presu->pre_enganche,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_enganche)); ?>)</b> Número de pagos: <b><?php echo $presu->pre_numpagenganche;?>.</b></td></tr> 
-           <tr><td valign="top" width="20">C) </td><td> <b><?php echo $presu->pre_nummensualidades;?></b> Pagos <b>mensuales</b> por la cantidad de: <b>$<?php echo number_format($presu->pre_menusalidades,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_menusalidades)); ?>),</b> los días <?php echo date('d',strtotime($presu->pre_fechapagmensualidades));?> de cada mes. A los pagos realizados por adelantado, se les bonificará el 100% de interés, entregándose el último pagaré de la serie.</b>
+           <tr><td valign="top" width="20">C) </td><td> <b><?php echo $presu->pre_nummensualidades;?></b> Pagos <b>mensuales</b> por la cantidad de: <b>$<?php echo number_format($presu->pre_menusalidades,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_menusalidades)); ?>),</b> los días <?php echo date('d',strtotime($presu->pre_fechapagmensualidades));?> de cada mes. A los pagos realizados por anticipado, se les bonificará el 100% de interés, entregándose el último pagaré de la serie.</b>
                               <br><b><?php echo $presu->pre_numanualidades;?> </b>Pagos <b>anuales</b> por la cantidad de <b>$<?php echo number_format($presu->pre_anualidades,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_anualidades)); ?>).</b></td>
            </tr> 
            <tr><td valign="top" width="20">D) </td><td> <span class='underline'>Al llegar al vencimiento de la anualidad (en caso de existir en el financiamiento), ésta se tendrá que liquidar primero, antes de seguir con los pagos por adelantado, aún en el caso de adelanto de mensualidades.</span> </td> </tr> 
-           <tr><td valign="top" width="20">E) </td><td>Forma de pago:<b>Efectivo.</b> </td></tr> 
+           <tr><td valign="top" width="20">E) </td><td>Forma de pago: <b><?php echo $ventipo;?>.</b> </td></tr> 
            <!--<tr><td valign="top" width="20">F) </td><td>Fecha de entrega del vehículo: <b>10 de noviembre de 2015.</b></td></tr>-->
-           <tr><td valign="top" width="20">G) </td><td>Intereses moratorios al <b>7% mensual</b> en caso de retraso en el pago.</td></tr> 
+           <tr><td valign="top" width="20">F) </td><td>Intereses moratorios al <b>7% mensual</b> en caso de retraso en el pago.</td></tr> 
          </table>
       </div>
       <p class="space"><b>Cuarta.</b> El Comprador se obliga a no vender, ni a grabar en forma alguna el vehículo, objeto de este contrato, hasta que liquide el precio en su totalidad.</p>
@@ -195,6 +209,20 @@ if (isset($_GET['ven_id'])) {
          <tr> <td  width="90">Teléfono:</td> <td><?php echo $aval->av_tel;?></td> </tr> 
          <tr> <td  width="90">Celular:</td> <td><?php echo $aval->av_cel;?></td> </tr> 
       </table>
+
+      <?php
+      if ($venta->av_iddos!=0) {
+        ?>
+        <table width="450" class="space">
+         <tr> <td  width="90">Segundo Fiador:</td> <td><?php echo $aval_dos->av_nombre." ".$aval_dos->av_apellidos;?>.</td> </tr>
+         <tr> <td  width="90">Parentesco:</td> <td><?php echo $aval_dos->av_parentezco?></td> </tr>
+         <tr> <td  width="90">Domicilio:</td> <td><?php  echo $domaval_dos[0]." #".$domaval_dos[1]." ".$domaval_dos[2].", ".$aval_dos->av_ciudad." ".$aval_dos->av_estado; ?></td> </tr>
+         <tr> <td  width="90">Teléfono:</td> <td><?php echo $aval_dos->av_tel;?></td> </tr> 
+         <tr> <td  width="90">Celular:</td> <td><?php echo $aval_dos->av_cel;?></td> </tr> 
+        </table>
+        <?php
+      }
+      ?>
       <p class="space"><b>Décima segunda:</b> Para todos los efectos legales de este contrato, los contrayentes se someten a la competencia del la Procuraduría Federal del Consumidor y tribunales del lugar en que se haya suscrito en el presente contrato, se regirá por las disposiciones aplicables de la Ley de Protección al Consumidor.</p>
       <div class="col-xs-12">
           <div class="fir">Vendedor<br> Ing. Mauricio Eduardo Torres Nava</div>
@@ -202,7 +230,13 @@ if (isset($_GET['ven_id'])) {
       </div>
       <div class="col-xs-12">
           <div class="fir">1er Fiador<br><?php echo $aval->av_nombre." ".$aval->av_apellidos;?></div>
-          <div class="fir">2do Fiador</div>
+          <?php
+            if ($venta->av_iddos!=0) {
+              ?>
+              <div class="fir">2do Fiador</div>
+              <?php
+            }
+          ?>
       </div>
       <p class="col-xs-12 bottom">Contrato Registrado ante la Procuraduría Federal del Consumidor bajo el No. De registro 4882-2011 de fecha 20 de junio de 2011, emitido por el ciudadano Carlos Meneses Toribio y solo podrá ser utilizado por socios activos de la Asociación Nacional de Comerciantes en Automóviles y Camiones Usados, A.C., quedando estrictamente prohibido su uso por particulares o personas morales afiliados a la A.N.C.A., A.C.</p>
   </div>

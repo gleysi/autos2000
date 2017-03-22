@@ -45,7 +45,8 @@ include("marcas.php");
 				$verde=$amarillo=$rojo=null;
 				$Npagos = 0;
 
-				$doc = $sql->Query("SELECT * FROM pagos WHERE pre_id='".$f->pre_id."' AND pag_tipo='1' ORDER BY pag_fecha DESC ");
+				//$doc = $sql->Query("SELECT * FROM pagos WHERE pre_id='".$f->pre_id."' AND pag_tipo='1' ORDER BY pag_fecha DESC ");
+				$doc = $sql->Query("SELECT * FROM pagos WHERE pre_id='".$f->pre_id."'  ORDER BY pag_fecha DESC ");
 				if ($doc->num_rows>0) {
 					$i=0;
 					while ($pagos = $doc->fetch_object()) {
@@ -57,10 +58,12 @@ include("marcas.php");
 					}
 				}
 				
-				$ultimopago =date_create($ultimo);
+				//echo $ultimo;
+				$ultimopago = date_create($ultimo);
 				$hoy = date_create(date('Y-m-d'));
 				$interval = date_diff($hoy,$ultimopago);
-				$interval = $interval->format('%m');
+				$interval = $interval->format('%m'); // numero de pagares vencidos por mes
+				//print_r($interval);
 
 				$adeudo = $f->pre_costototal-$Npagos;
 				

@@ -34,8 +34,8 @@ if (isset($_POST['guardar'])) {
 	if ($_POST['pag_fecha']!='' AND $_POST['pag_pago']!='') {
 
 		// usar tipo de pago como mensualidad o anualidad
-
-		$insert=$sql->Query("INSERT INTO pagos VALUES(NULL,'".__($_GET['id'])."', '".$presu->cli_id."','".$presu->ve_id."', '".__($_POST['pag_fecha'])."', '".__($_POST['pag_pago'])."', '".__($_POST['pag_tipo'])."', '".__($_POST['pag_monatorio'])."'  ) ");
+		
+		$insert=$sql->Query("INSERT INTO pagos VALUES(NULL,'".__($_GET['id'])."', '".$presu->cli_id."','".$presu->ve_id."', '".__($_POST['pag_fecha'])."', '".__($_POST['pag_pago'])."', '1', '".__($_POST['pag_monatorio'])."'  ) ");
 	    echo "<div class='alert alert-success'>Su pago ah sido agregado exitosamente</div>";
 
 	}
@@ -174,11 +174,10 @@ if (isset($_POST['subirtestigo'])) {
 			<table class="table table-striped">
 				<tr >
 					<th>Número de pago:</th>
-					<th>Tipo:</th>
-					<th>Fecha de pago:</th>
-					<th>Depósito:</th>
-					<th>Imprimir:</th>
-					<th>testigos:</th>
+					<th>Fecha de pago</th>
+					<th>Depósito</th>
+					<th>Imprimir</th>
+					<th>testigos</th>
 				</tr>
 				    <?php
 				    
@@ -186,11 +185,9 @@ if (isset($_POST['subirtestigo'])) {
 				    if ($pa->num_rows>0) {
 				    	$i=$pa->num_rows;
 				    	while ($p=$pa->fetch_object()) {
-				    		if ($p->pag_tipo==1) $tipo = "Mensualidad"; else $tipo = "Anualidad";
 				    		?>
 							<tr>
 				    		<td>#<?php echo $i;?></td>
-				    		<td><?php echo $tipo; ?></td>
 							<td><?php echo $p->pag_fecha; ?> </td>
 							<td><?php echo $p->pag_pago;?></td>
 							<td> 
@@ -226,32 +223,12 @@ if (isset($_POST['subirtestigo'])) {
 						<td> <input class="form-control" type="date" name="pag_fecha" value="<?php echo date('Y-m-d');?>"></td>
 					</tr>
 					<tr>
-						<td>Tipo de pago</td>
-						<td>
-							<select class="form-control" type="number" name="pag_tipo" id="pag_tipo" onchange="interes($('#pag_monatorio').val());">
-								<option value="1">Mensualidad</option>
-								<option value="2">Anualidad</option>
-							</select>
-							<input type="hidden" id="t_mensualidad" name="t_mensualidad" value="<?php echo $presu->pre_menusalidades; ?>">
-							<input type="hidden" id="t_anualidad" name="t_anualidad" value="<?php echo $presu->pre_anualidades; ?>">
-						</td>
-					</tr>
-					<tr>
 						<td>Interés moratorio</td>
-						<td> 
-							<select class="form-control" type="number" name="pag_monatorio" id="pag_monatorio" onchange="interes(this.value);">
-								<option value="0">0%</option>
-								<option value="3.5">3.5%</option>
-								<option value="5">5%</option>
-								<option value="7">7%</option>
-							</select> 
-						</td>
+						<td><input class="form-control" type="number" name="pag_monatorio"> </td>
 					</tr>
 					<tr>
 						<td>Depósito</td>
-						<td> <!-- Es lo que vino pagando al final -->
-							<input class="form-control" type="number" id="pag_pago" name="pag_pago" > 
-						</td>
+						<td><input class="form-control" type="number" name="pag_pago"> </td>
 					</tr>
 					<tr>
 						<td></td>
@@ -292,15 +269,5 @@ if (isset($_POST['subirtestigo'])) {
 		$("#num").html(num);
 		$("#pag_id").val(pag_id);
 		$("#pre_id").val(pre_id);
-	}
-	function interes (interes) {
-		if ($("#pag_tipo").val()==1) {
-			var num = parseInt($("#t_mensualidad").val());
-		}else{
-			var num = parseInt($("#t_anualidad").val());
-		}
-		totalcobrar = num*interes/100;
-		totalcobrar = parseInt(num+totalcobrar);
-		$("#pag_pago").val(totalcobrar);
 	}
 </script>

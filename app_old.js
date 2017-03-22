@@ -20,79 +20,59 @@ function unidad(ve_id){
 }
 
 function enganches (eng) {
-  $("#PagosEnganche").html("");
-	for ( var i = 1; i <= eng; i++) {
+    $("#PagosEnganche").html("");
+  for ( var i = 1; i <= eng; i++) {
          $("#PagosEnganche").append('<input name="pre_fpe['+i+']" class="form-control" type="date" >');
-	}
+  }
 
   costototal();
 }
 
-// hacerla funcion
-/*$("#pre_intereses").keyup(function(){ 
+$("#pre_intereses").keyup(function(){ 
    var pre=$(this).val();
    $("#pre_iva").val(pre*.16);
    costototal();
- });*/
+ });
 
 function anualidades (anu) {
-
   $("#NumAnualidades").html("");
-	for ( var i = 1; i <= anu; i++) {
+  for ( var i = 1; i <= anu; i++) {
          $("#NumAnualidades").append('<input name="pre_fpa['+i+']" class="form-control" type="date">');
-	}
-  var CuanAnu = $("#pre_anualidades").val();
-  CalSumMens(CuanAnu);
+  }
   costototal();
 }
 
 function costototal(){
-
   if ( $(formatable.ven_tipo).val() == 0 ) { 
     var pre_precio=  $(formatable.pre_precio_contado).val();
   }else { 
     var pre_precio=  $(formatable.pre_precio).val();  /// + más precio venta
   }
+  
   //alert(pre_precio);
   var pre_enganche=  $(formatable.pre_enganche).val(); /// - menos enganche
   var pre_gps=  $(formatable.pre_gps).val(); /// + cobro GPS si es que tiene
-  if (pre_gps==0) { pre_gps = 0; } else if(pre_gps=="2") {pre_gps = 1900;} else pre_gps=3800;
+  if (pre_gps==0) { pre_gps = 0;} else pre_gps=3800;
 
   var saldo = pre_precio-pre_enganche+pre_gps;  /// SALDO
 
-  var NumMeses=$(formatable.pre_nummensualidades).val();   
+  var NumMeses=$(formatable.pre_nummensualidades).val();    
+  var porcentaje_in= (saldo*1.5/100)*NumMeses; // más el porcentaje de intereses (1.5% de el saldo) NOTA: 1.5% de cada mensualidad
 
-  var InteresesManu = $("#InteresesManu").val(); 
-  var porcentaje_in= (saldo*InteresesManu/100)*NumMeses; // más el porcentaje de intereses (1.5% de el saldo) NOTA: 1.5% de cada mensualidad
-
-
-  // CalInt(InteresesManu);
-  var int1 = saldo*NumMeses;
-  var pre_intereses = (int1*InteresesManu)/100;
-  $("#pre_intereses").val(Math.round(pre_intereses));
-  //pre_ivaa(pre_intereses);
-
-  $("#pre_iva").val( Math.round(pre_intereses*.16) );
-  /// end CalInt
-
-
-  var iva = pre_intereses*.16;    
-  //var iva = $("#pre_intereses").val()*.16;    
+  var iva = $(formatable.pre_intereses).val()*.16;    
 
   var total = saldo + porcentaje_in + iva;
 
-  /*console.log("+ Precio de venta"+pre_precio);
+  console.log("+ Precio de venta"+pre_precio);
   console.log("- Enganche"+pre_enganche);
   console.log("+ GPS"+pre_gps);
-  console.log("Subtotal= Precio de venta - Enganche + GPS: "+saldo);
+  console.log("Saldo= Precio de venta - Enganche + GPS: "+saldo);
   console.log("Número de meses: "+NumMeses);
-  console.log("Porcentaje de Intereses (cda mes)= 1.5% Subtotal: "+porcentaje_in);
+  console.log("Porcentaje de Intereses (cda mes)= 1.5% Saldo: "+porcentaje_in);
   console.log("IVA= Intereses 16%"+iva);
-  console.log("Total = Subtotal + Porcentaje de intereses + IVA"+total);*/
+  console.log("Total = Saldo + Porcentaje de intereses + IVA"+total);
   
-  $("#pre_costototal").val(Math.round(total));
-  $("#subtotal").val(Math.round(saldo));
-
+  $("#pre_costototal").val(total);
 }
 
 /*$( document ).ready(function() {
@@ -135,53 +115,9 @@ function tipoventa (v) {
   if(v==1) {
     $("#tipocontado").hide(); 
     $("#tipocredito").show(); 
-    //setTimeout(function() { CalInt(1.5);}, 2000);
   } 
   else {
     $("#tipocontado").show();
     $("#tipocredito").hide();
-  } 
-}
-
-function CalSumMens (v) {
-  var NumAnu = $("#pre_numanualidades").val();
-  var total_anu = v*NumAnu;
-  $("#total_anualidad").val(total_anu);
-
-  var precostototal = $("#pre_costototal").val();
-  var total_mensua = precostototal-total_anu;
-  $("#total_mensua").val(total_mensua);
-
-  // calcular cunato por cada mes
-  var NumMen = $("#pre_nummensualidades").val();
-  $("#pre_mensualidades").val(Math.round(total_mensua/NumMen));
-  $("#pre_mensualidadeshome").html(Math.round(total_mensua/NumMen));
-
-}
-
-function unideposito (v) {
-   if(v==1) {
-    $(".unidadsi").show(); 
-  } 
-  else {
-    $(".unidadsi").hide();
-  } 
-}
-
-function fiadordos (v) {
-   if(v==1) {
-    $(".fiadordosi").show(); 
-  } 
-  else {
-    $(".fiadordosi").hide();
-  } 
-}
-
-function cartas (v) {
-   if(v==1) {
-    $(".cartasi").show(); 
-  } 
-  else {
-    $(".cartasi").hide();
   } 
 }

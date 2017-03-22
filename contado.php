@@ -87,7 +87,7 @@ if (isset($_GET['ven_id'])) {
 
 	<div style="font-size: 12px;line-height: 15px;" class="container" id="impricom">
 	<input style="float: left;" type="button" onclick="window.print();" class="nover" value="Imprimir" />
-	   <p style="text-align:left"><img style=" width: 130px;"src="<?php echo MEDIA;?>/img/logo.jpg"></p>
+	   <p style="text-align:left"><img style=" width: 130px;"src="<?php echo MEDIA;?>/img/logo.png"></p>
 	   <h2  style="text-align:center">SEMINUEVOS <br>CONTRATO DE VENTA DE CONTADO</h2>	
 	   <p style="text-align: right;"><br><br>TORREÓN COAH. A <span class="text-uppercase"><?php echo strftime('%d de %B del %Y', strtotime(date('Y-m-d')));  ?></span></p>
 	   <p><br><br>
@@ -96,7 +96,7 @@ if (isset($_GET['ven_id'])) {
         <b>VENDEDOR</b>: <?php echo $usu->usu_nombre." ".$usu->usu_apellidos;?>, <!-- NO HAY USUARIOS CON DIRECCION con domicilio: Av. Doroteo Arango 217 Col. El Dorado, Gomez Palacio Dgo.,  87 12 18 91 69 --><br>
         <b>COMPRADOR</b>: <?php echo $cliente->cli_nombre." ".$cliente->cli_apellido; ?>, con domicilio:  <?php echo $domi[0]." #".$domi[1]." ".$domi[2].", ".$cliente->cli_ciudad." ".$cliente->cli_estado." Tel: ".$cliente->cli_tel;  ?> <br><br>
      </p>
-     <p  class="text-center">CLAUSULAS</p>
+     <p  class="text-center">CLÁUSULAS</p>
      <ul>
        <li>Tanto vendedor como comprador pactan el precio de contado del vehículo en la cantidad de $<?php echo number_format($presu->pre_costototal,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_costototal)); ?> ) de mutuo acuerdo,  los cuales se pagan de la siguiente manera: Se entrega la cantidad de $<?php echo number_format($presu->pre_costototal,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_costototal)); ?> ) el día de hoy liquidando la compra.</li>
        <li>El vehículo se entrega en las condiciones físicas y mecánicas en que se encuentra, con previa revisión del comprador, por lo que <b class="text-uppercase">no se acepta reclamación posterior de ninguna índolE</b></li>

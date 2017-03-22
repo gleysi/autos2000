@@ -50,7 +50,7 @@ if(isset($_POST['user']) && $_POST['pass']) {
    </head>
    <body>
             <div class="header text-center" style="display:block">
-                  <a href="/"><img style="max-width: 200px;" src="<?php echo MEDIA;?>/img/logo.jpg" alt="Autos2000" border="0"></a><hr>
+                  <a href="/"><img style="max-width: 200px;" src="<?php echo MEDIA;?>/img/logo.png" alt="Autos2000" border="0"></a><hr>
             </div>
                <div class="col-sm-4"></div>     
                <div class="col-sm-4" style="border-radius: 5px;background-color:#eee;padding-top:15px;padding-bottom:15px;">

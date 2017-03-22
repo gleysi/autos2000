@@ -7,56 +7,37 @@ include("marcas.php");
 //Convertir imagenes convert($imagen,$calidad,$width,$formato,$retorno) //
 
 $_POST['att_fotos']=1; // eliminar cuanod se suban fotos
-
-
-
-
 // agregar vehiculo
 if (isset($_POST['guardar'])) {
-
-	// NUEVO COLOR EXTERIOR
-	if ( $_POST['att_colorext']==0 AND $_POST['co_nombre']!='') {
-		$color=$sql->Query("INSERT INTO colores VALUES(NULL,'".__($_POST['co_nombre'])."') ");
-	    $att_colorext=$sql->insert_id;
-	} else $att_colorext=$_POST['att_colorext'];
-
-	// NUEVO COLOR INTERIOR
-	if ( $_POST['att_colorint']==0 AND $_POST['co_nombre2']!='') {
-		$color=$sql->Query("INSERT INTO colores VALUES(NULL,'".__($_POST['co_nombre2'])."') ");
-	    $att_colorint=$sql->insert_id;
-	} else $att_colorint=$_POST['att_colorint'];
-
-
 	$sql->Query("INSERT INTO vehiculos (ve_id,suc_id,ve_fechaad,ve_marca,ve_tipo,ve_modelo) VALUES (NULL,'".__($_POST['suc_id'])."','".date('Y-m-d')."','".__($_POST['marca'])."','".__($_POST['tipo'])."','".__($_POST['modelo'])."')");
 	$vid=$sql->insert_id;
 	
-	$sql->Query("INSERT INTO vehiculos_attr  VALUES (NULL, '".$vid."', '".$att_colorext."', '".$att_colorint."', '".__($_POST['vestiduras'])."', '".__($_POST['transmision'])."', '".__($_POST['nummotor'])."', '".__($_POST['numserie'])."', '".__($_POST['att_placas'])."', '".__($_POST['att_placasenti'])."', '".__($_POST['kilometraje'])."', '".__($_POST['att_tenencias'])."', '".__($_POST['att_equipamiento'])."', '".__($_POST['aire'])."', '".__($_POST['stereo'])."', '".__($_POST['cd'])."', '".__($_POST['quemacocos'])."', '".__($_POST['rines'])."', '".__($_POST['bolsasaire'])."', '".__($_POST['cilindros'])."', '".__($_POST['vidrios'])."', '".__($_POST['seguros'])."', '".__($_POST['att_qty'])."', '".__($_POST['comentarios'])."', '".__($_POST['fechafac'])."', '".__($_POST['attr_fechafacoriginal'])."', '".__($_POST['expedida'])."', '".__($_POST['folio'])."', '".__($_POST['attr_foliooriginal'])."', '0', '".__($_POST['att_fotos'])."', '".__($_POST['att_preciocompra'])."', '".__($_POST['att_precioventa'])."', '".__($_POST['att_preciooferta'])."', '".__($_POST['att_disponible'])."', '".__($_POST['att_web'])."')");
+	$sql->Query("INSERT INTO vehiculos_attr  VALUES (NULL, '".$vid."', '".__($_POST['att_colorext'])."', '".__($_POST['colorint'])."', '".__($_POST['vestiduras'])."', '".__($_POST['transmision'])."', '".__($_POST['nummotor'])."', '".__($_POST['numserie'])."', '".__($_POST['att_placas'])."', '".__($_POST['att_placasenti'])."', '".__($_POST['kilometraje'])."', '".__($_POST['att_tenencias'])."', '".__($_POST['att_equipamiento'])."', '".__($_POST['aire'])."', '".__($_POST['stereo'])."', '".__($_POST['cd'])."', '".__($_POST['quemacocos'])."', '".__($_POST['rines'])."', '".__($_POST['bolsasaire'])."', '".__($_POST['cilindros'])."', '".__($_POST['vidrios'])."', '".__($_POST['seguros'])."', '".__($_POST['att_qty'])."', '".__($_POST['comentarios'])."', '".__($_POST['fechafac'])."', '".__($_POST['attr_fechafacoriginal'])."', '".__($_POST['expedida'])."', '".__($_POST['folio'])."', '".__($_POST['attr_foliooriginal'])."', '".__($_POST['att_vu'])."', '".__($_POST['att_fotos'])."', '".__($_POST['att_preciocompra'])."', '".__($_POST['att_precioventa'])."', '".__($_POST['att_preciooferta'])."', '".__($_POST['att_disponible'])."', '".__($_POST['att_web'])."')");
 	
-	$destino = "/home/autosmx/public_html/media/fotos/".date("Y/m/");
-	if(!isset($_GET['del'])) {
-		if(!file_exists($destino)) {
-	    	mkdir($destino, 0777, tru);
-		}	
-		foreach ($_FILES["f"]["error"] as $i => $error) {
-	      	move_uploaded_file($_FILES['f']['tmp_name'][$i],$destino.$_FILES['f']['name'][$i]);
-	    	$tipo = $_FILES['f']['type'][$i];
-		      	if (($tipo == "image/gif") ||  ($tipo == "image/jpeg") || ($tipo=="image/png")) {
-		     	   	if(file_exists($destino.$_FILES['f']['name'][$i])) {
-			    	$sql->Query("INSERT INTO fotos (ve_id) VALUES ('".$vid."')");
-			 		$idfoto=$sql->insert_id;
-			 		$thu=$idfoto.'_100.jpg';
-			 		$med=$idfoto.'_400.jpg';
-			    	$big=$idfoto.'_800.jpg';
-			    	$ori=$idfoto.'.jpg';
-			    	convert($destino.$_FILES['f']['name'][$i],75,100,"jpg",$destino.$thu);//Thumbnail
-			    	convert($destino.$_FILES['f']['name'][$i],75,400,"jpg",$destino.$med);//Mediana
-			    	convert($destino.$_FILES['f']['name'][$i],75,800,"jpg",$destino.$big);//Big
-			    	convert($destino.$_FILES['f']['name'][$i],100,0,"jpg",$destino.$ori);//Original
-			 		unlink($destino.$_FILES['f']['name'][$i]);
-			 	}
-		    	}
-	   	}
-	}	
+	//$destino = "/home/autosmx/public_html/media/fotos/".date("Y/m/");
+	$destino = "/home/smiranda/Webs/media/fotos/".date("Y/m/"); /// solo local
+	/*if(!file_exists($destino)) {
+    	mkdir($destino, 0777, tru);
+	}	*/
+	foreach ($_FILES["f"]["error"] as $i => $error) {
+      	move_uploaded_file($_FILES['f']['tmp_name'][$i],$destino.$_FILES['f']['name'][$i]);
+    	$tipo = $_FILES['f']['type'][$i];
+      	if (($tipo == "image/gif") ||  ($tipo == "image/jpeg") || ($tipo=="image/png")) {
+     	   	if(file_exists($destino.$_FILES['f']['name'][$i])) {
+            	$sql->Query("INSERT INTO fotos (ve_id) VALUES ('".$vid."')");
+         		$idfoto=$sql->insert_id;
+         		$thu=$idfoto.'_100.jpg';
+         		$med=$idfoto.'_400.jpg';
+            	$big=$idfoto.'_800.jpg';
+            	$ori=$idfoto.'.jpg';
+            	convert($destino.$_FILES['f']['name'][$i],75,100,"jpg",$destino.$thu);//Thumbnail
+            	convert($destino.$_FILES['f']['name'][$i],75,400,"jpg",$destino.$med);//Mediana
+            	convert($destino.$_FILES['f']['name'][$i],75,800,"jpg",$destino.$big);//Big
+            	convert($destino.$_FILES['f']['name'][$i],100,0,"jpg",$destino.$ori);//Original
+         		unlink($destino.$_FILES['f']['name'][$i]);
+         	}
+    	}
+   	}	
 
 	echo "<div class='alert alert-success'>Vehículo Agregado</div>";
 }
@@ -65,14 +46,11 @@ if(isset($_GET['del'])) {
 	$fecha = $sql->Query("SELECT ve_fechaad FROM vehiculos WHERE ve_id='".addslashes(strip_tags($_GET['c']))."'");
 	$f = $fecha->fetch_object();
 	$sql->Query("DELETE FROM fotos WHERE id ='".addslashes(strip_tags($_GET['del']))."'");
-	$fileorig = "/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del'].".jpg";
-	if(file_exists($fileorig)) {
-		unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del'].".jpg");
-		unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_100.jpg");
-		unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_400.jpg");
-		unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_800.jpg");
-		echo "<div class='alert alert-success'>Fotografia eliminada</div>";
-	}
+	unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del'].".jpg");
+	unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_100.jpg");
+	unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_400.jpg");
+	unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_800.jpg");
+	echo "<div class='alert alert-success'>Fotografia eliminada</div>";
 }
 // ELIMINAR vehiculo
 if (isset($_GET['e'])){
@@ -85,48 +63,9 @@ if (isset($_GET['e'])){
 
 // EDITAR vehiculo
 if (isset($_POST['editar'])) {
-	
-	// NUEVO COLOR EXTERIOR
-	if ( $_POST['att_colorext']==0 AND $_POST['co_nombre']!='') {
-		$color=$sql->Query("INSERT INTO colores VALUES(NULL,'".__($_POST['co_nombre'])."') ");
-	    $att_colorext=$sql->insert_id;
-	} else $att_colorext=$_POST['att_colorext'];
-
-		// NUEVO COLOR INTERIOR
-	if ( $_POST['att_colorint']==0 AND $_POST['co_nombre2']!='') {
-		$color=$sql->Query("INSERT INTO colores VALUES(NULL,'".__($_POST['co_nombre2'])."') ");
-	    $att_colorint=$sql->insert_id;
-	} else $att_colorint=$_POST['att_colorint'];
-	
 	$sql->Query("UPDATE  vehiculos SET suc_id='".__($_POST['suc_id'])."',  ve_marca='".__($_POST['marca'])."', ve_tipo='".__($_POST['tipo'])."', ve_modelo='".__($_POST['modelo'])."' WHERE ve_id='".__($_POST['ve_id'])."' ");
-	$sql->Query("UPDATE  vehiculos_attr SET att_colorext='".$att_colorext."', att_colorint = '".$att_colorint."', att_vestiduras='".__($_POST['vestiduras'])."', att_transmision='".__($_POST['transmision'])."', att_nummotor='".__($_POST['nummotor'])."', att_numserie='".__($_POST['numserie'])."', att_placas='".__($_POST['att_placas'])."', att_placasenti='".__($_POST['att_placasenti'])."', att_kilometraje='".__($_POST['kilometraje'])."', att_tenencias='".__($_POST['att_tenencias'])."', att_equipamiento='".__($_POST['att_equipamiento'])."', att_aire='".__($_POST['aire'])."', att_stereo='".__($_POST['stereo'])."', att_cd='".__($_POST['cd'])."', att_quemacocos='".__($_POST['quemacocos'])."', att_rines='".__($_POST['rines'])."', att_bolsasaire='".__($_POST['bolsasaire'])."', att_cilindros='".__($_POST['cilindros'])."', att_vidrios='".__($_POST['vidrios'])."', att_seguros='".__($_POST['seguros'])."', att_qty='".__($_POST['att_qty'])."', att_anotaciones='".__($_POST['comentarios'])."', att_fechafac='".__($_POST['fechafac'])."', att_expedida='".__($_POST['expedida'])."', att_folio='".__($_POST['folio'])."', att_fotos='".__($_POST['att_fotos'])."', att_preciocompra='".__($_POST['att_preciocompra'])."', att_precioventa='".__($_POST['att_precioventa'])."', att_preciooferta='".__($_POST['att_preciooferta'])."', att_disponible='".__($_POST['att_disponible'])."', att_web='".__($_POST['att_web'])."'WHERE ve_id='".__($_POST['ve_id'])."' ");
+	$sql->Query("UPDATE  vehiculos_attr SET att_colorext='".__($_POST['att_colorext'])."', att_colorint = '".__($_POST['colorint'])."', att_vestiduras='".__($_POST['vestiduras'])."', att_transmision='".__($_POST['transmision'])."', att_nummotor='".__($_POST['nummotor'])."', att_numserie='".__($_POST['numserie'])."', att_placas='".__($_POST['att_placas'])."', att_placasenti='".__($_POST['att_placasenti'])."', att_kilometraje='".__($_POST['kilometraje'])."', att_tenencias='".__($_POST['att_tenencias'])."', att_equipamiento='".__($_POST['att_equipamiento'])."', att_aire='".__($_POST['aire'])."', att_stereo='".__($_POST['stereo'])."', att_cd='".__($_POST['cd'])."', att_quemacocos='".__($_POST['quemacocos'])."', att_rines='".__($_POST['rines'])."', att_bolsasaire='".__($_POST['bolsasaire'])."', att_cilindros='".__($_POST['cilindros'])."', att_vidrios='".__($_POST['vidrios'])."', att_seguros='".__($_POST['seguros'])."', att_qty='".__($_POST['att_qty'])."', att_anotaciones='".__($_POST['comentarios'])."', att_fechafac='".__($_POST['fechafac'])."', att_expedida='".__($_POST['expedida'])."', att_folio='".__($_POST['folio'])."', att_vu='".__($_POST['att_vu'])."', att_fotos='".__($_POST['att_fotos'])."', att_preciocompra='".__($_POST['att_preciocompra'])."', att_precioventa='".__($_POST['att_precioventa'])."', att_preciooferta='".__($_POST['att_preciooferta'])."', att_disponible='".__($_POST['att_disponible'])."', att_web='".__($_POST['att_web'])."' WHERE ve_id='".__($_POST['ve_id'])."' ");
 	echo '<div class="alert alert-success" role="alert">Edición de vehiculo guardada exitosamente</div>';
-
-	$destino = "/home/autosmx/public_html/media/fotos/".date("Y/m/");
-	
-		if(!file_exists($destino)) {
-	    	mkdir($destino, 0777, tru);
-		}	
-		foreach ($_FILES["f"]["error"] as $i => $error) {
-
-	      	move_uploaded_file($_FILES['f']['tmp_name'][$i],$destino.$_FILES['f']['name'][$i]);
-	    	$tipo = $_FILES['f']['type'][$i];
-		      	if (($tipo == "image/gif") ||  ($tipo == "image/jpeg") || ($tipo=="image/png")) {
-		     	   	if(file_exists($destino.$_FILES['f']['name'][$i])) {
-			    	$sql->Query("INSERT INTO fotos (ve_id) VALUES ('".__($_POST['ve_id'])."')");
-			 		$idfoto=$sql->insert_id;
-			 		$thu=$idfoto.'_100.jpg';
-			 		$med=$idfoto.'_400.jpg';
-			    	$big=$idfoto.'_800.jpg';
-			    	$ori=$idfoto.'.jpg';
-			    	convert($destino.$_FILES['f']['name'][$i],75,100,"jpg",$destino.$thu);//Thumbnail
-			    	convert($destino.$_FILES['f']['name'][$i],75,400,"jpg",$destino.$med);//Mediana
-			    	convert($destino.$_FILES['f']['name'][$i],75,800,"jpg",$destino.$big);//Big
-			    	convert($destino.$_FILES['f']['name'][$i],100,0,"jpg",$destino.$ori);//Original
-			 		unlink($destino.$_FILES['f']['name'][$i]);
-			 	}
-		    	}
-	   	}
 }
 
  $feve=$eve=false;
@@ -160,8 +99,8 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 				<td colspan="6"><b>Número económico</b><input type="hidden" value="<?php echo __($_GET['c']); ?>" name="ve_id"></td>
 			</tr>
 			<tr>
-				<td>ID</td>
-				<td><input readonly="readonly"  class="form-control" name="" value="<?php  if($feve) echo __($_GET['c']); ?>"></td>
+				<td>VU</td>
+				<td><input  class="form-control" name="att_vu" value="<?php if($feve) echo $att->att_vu; ?>"></td>
 				<td colspan="4"></td>
 			</tr>
 			<tr> <td colspan="6"><b>Unidad</b></td> </tr>
@@ -208,35 +147,25 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 				<td><input name="kilometraje" type="text" class="form-control" value="<?php if($feve) echo $att->att_kilometraje; ?>"></td>
 				<td>Color (ext):</td>
 				<td>
-					<select name="att_colorext" class="form-control" onchange="veri_color(this.value)">
+					<select name="att_colorext" class="form-control">
 						<?php
-						$colores=$sql->Query("SELECT * FROM colores ORDER BY co_id DESC");
-						if ($colores->num_rows>0) {
-							while ($co=$colores->fetch_object()) {
-								$selected=(isset($att->att_colorext) AND $att->att_colorext==$co->co_id)?'selected':null;
-							    echo "<option value='".$co->co_id."' ".$selected.">".$co->co_nombre."</option>";
-							}
+						foreach ($colorext as $k => $v) {
+							$selected=($feve AND $att->att_colorext==$k)?'selected':null;
+							echo "<option value='".$k."' ".$selected." >".$v."</option>";
 						}
-						echo "<option value='0' >-- Agregar Otro --</option>";
 						?>
 					</select>
-					<label id="otrocolor" style="display:none">Por favor ingresa otro color: <input name="co_nombre"  class="form-control" ></label>
 				</td>
 				<td>Color (int):</td>
 				<td>
-					<select name="att_colorint" class="form-control" onchange="veri_color2(this.value)">
+					<select name="colorint" class="form-control">
 						<?php
-						$colores=$sql->Query("SELECT * FROM colores ORDER BY co_id DESC");
-						if ($colores->num_rows>0) {
-							while ($co=$colores->fetch_object()) {
-								$selected=(isset($att->att_colorint) AND $att->att_colorint==$co->co_id)?'selected':null;
-							    echo "<option value='".$co->co_id."' ".$selected.">".$co->co_nombre."</option>";
-							}
+						foreach ($colorext as $k => $v) {
+							$selected=($feve AND $att->att_colorint==$k)?'selected':null;
+							echo "<option value='".$k."'  ".$selected." >".$v."</option>";
 						}
-						echo "<option value='0' >-- Agregar Otro --</option>";
 						?>
 					</select>
-					<label id="otrocolor2" style="display:none">Por favor ingresa otro color: <input name="co_nombre2"  class="form-control" ></label>
 				</td>
 			</tr>
 			<tr>
@@ -428,7 +357,6 @@ else{
 						$att = $sql->Query("SELECT att_vu FROM vehiculos_attr WHERE ve_id='".$u->ve_id."' ");
 						$tt = $att->fetch_object();
 						echo "<tr> <td>".$u->ve_id."</td> <td>".$tt->att_vu."</td> <td>".$u->ve_fechaad."</td> <td>".$mark."</td><td>".$u->ve_tipo."</td> <td>".$u->ve_modelo."</td>   <td> <a href='".$_SERVER['REQUEST_URI']."&c=".$u->ve_id."' class='btn btn-warning'>Editar</a> <button data-alt='".$_SERVER['REQUEST_URI']."&e=".$u->ve_id."' data-name='".$u->ve_id."' class='borrar btn btn-danger' data-toggle='modal' data-target='#myModal'>Eliminar</button></td> </tr>";
-						//echo "<tr> <td>".$u->ve_id."</td> <td>".$tt->att_vu."</td> <td>".$u->ve_fechaad."</td> <td>".$mark."</td> <td>".$u->ve_modelo."</td>   <td> <a href='".$_SERVER['REQUEST_URI']."&c=".$u->ve_id."' class='btn btn-warning'>Editar</a> <button data-alt='".$_SERVER['REQUEST_URI']."&e=".$u->ve_id."' data-name='".$u->ve_id."' class='borrar btn btn-danger' data-toggle='modal' data-target='#myModal'>Eliminar</button></td> </tr>";
 					}
 				}
 			?>
@@ -460,11 +388,3 @@ else{
 	<?php
 }
 ?>
-<script>
-	function veri_color (v) {
-		if (v==0)  $("#otrocolor").show();  else $("#otrocolor").hide();
-	}
-	function veri_color2 (v) {
-		if (v==0)  $("#otrocolor2").show();  else $("#otrocolor2").hide();
-	}
-</script>

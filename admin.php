@@ -4,6 +4,7 @@ require_once("../config.php");
 if (!isset($_SESSION['userAdmn'])) {
 	header('Location: /');
 }
+date_default_timezone_set("America/Mexico_City");
 ?>
 <!DOCTYPE html>
 <html lang="en">

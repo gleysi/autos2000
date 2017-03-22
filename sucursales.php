@@ -7,7 +7,7 @@ if (!isset($_SESSION['userAdmn'])) {
 // AGREGAR SUCURSAL
 if (isset($_POST['guardar'])) {
 		if($_POST['suc_nombre']!='' AND  $_POST['suc_direccion']!='' AND  $_POST['suc_ciudad']!='' AND  $_POST['suc_estado']!=''){
-			$insert=$sql->Query("INSERT INTO sucursales VALUES(NULL,  '".addslashes(strip_tags($_POST['suc_nombre']))."', '".addslashes(strip_tags($_POST['suc_direccion']))."', '".addslashes(strip_tags($_POST['suc_ciudad']))."', '".addslashes(strip_tags($_POST['suc_estado']))."', '".addslashes(strip_tags($_POST['suc_tel']))."' ) ");
+			$insert=$sql->Query("INSERT INTO sucursales VALUES(NULL,  '".addslashes(strip_tags($_POST['suc_nombre']))."', '".addslashes(strip_tags($_POST['suc_direccion']))."', '".addslashes(strip_tags($_POST['suc_ciudad']))."', '".addslashes(strip_tags($_POST['suc_estado']))."', '".addslashes(strip_tags($_POST['suc_tel']))."', '".addslashes(strip_tags($_POST['suc_status']))."' ) ");
 			echo "<div class='alert alert-success'>Sucursal Agregada</div>";
 		}else{
 			echo "<div class='alert alert-danger'>Por favor llene todos los campos</div>";
@@ -23,7 +23,7 @@ if (isset($_GET['e'])){
 // EDITAR SUCURSAL
 if (isset($_POST['editar'])) {
 		if($_POST['suc_nombre']!='' AND  $_POST['suc_direccion']!='' AND  $_POST['suc_ciudad']!='' AND  $_POST['suc_estado']!=''){
-			$edit=$sql->Query("UPDATE sucursales SET  suc_nombre='".addslashes(strip_tags($_POST['suc_nombre']))."', suc_direccion='".addslashes(strip_tags($_POST['suc_direccion']))."',  suc_ciudad='".addslashes(strip_tags($_POST['suc_ciudad']))."', suc_estado='".addslashes(strip_tags($_POST['suc_estado']))."', suc_tel='".addslashes(strip_tags($_POST['suc_tel']))."' WHERE suc_id='".addslashes(strip_tags($_GET['c']))."' ");
+			$edit=$sql->Query("UPDATE sucursales SET  suc_nombre='".addslashes(strip_tags($_POST['suc_nombre']))."', suc_direccion='".addslashes(strip_tags($_POST['suc_direccion']))."',  suc_ciudad='".addslashes(strip_tags($_POST['suc_ciudad']))."', suc_estado='".addslashes(strip_tags($_POST['suc_estado']))."', suc_tel='".addslashes(strip_tags($_POST['suc_tel']))."', suc_status='".addslashes(strip_tags($_POST['suc_status']))."' WHERE suc_id='".addslashes(strip_tags($_GET['c']))."' ");
 			echo "<div class='alert alert-success'>Sucursal Editada</div>";
 		}else{
 			echo "<div class='alert alert-danger'>Por favor llene todos los campos</div>";
@@ -65,6 +65,13 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 		<div class="form-group">
 		    <label>Estado:</label>
 		    <input type="text" class="form-control"  placeholder="Estado" name="suc_estado" value="<?php if($show) echo $sel->suc_estado; ?>">
+		</div>
+		<div class="form-group">
+		    <label>Mostrar en web:</label>
+		    <select class="form-control" name="suc_status">
+		    	<option value="1" <?php if ($show and $sel->suc_status=='1' ) echo "selected";?>>Si</option>
+		    	<option value="0" <?php if ($show and $sel->suc_status=='0' ) echo "selected";?>>No</option>
+		    </select>
 		</div>
 	    <button type="submit" class="btn btn-default" name='<?php echo $name;?>'><?php echo $titulo;?></button>
 	</form>

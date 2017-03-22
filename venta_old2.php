@@ -24,14 +24,8 @@ if (isset($_POST['guardar'])) {
 	$aval=$sql->Query("INSERT INTO avales VALUES (NULL,'".__($_POST['av_nombre'])."','".__($_POST['av_apellidos'])."','".__($_POST['av_dir1']).' | '.__($_POST['av_dir2']).' | '.__($_POST['av_dir3'])."','".__($_POST['av_ciudad'])."','".__($_POST['av_estado'])."' ,'".__($_POST['av_cp'])."','".__($_POST['av_tel'])."','".__($_POST['av_cel'])."','".__($_POST['av_folio'])."','".__($_POST['av_stcivil'])."','".__($_POST['av_rfc'])."','".__($_POST['av_parentezco'])."' ) ");
 	$av_id=$sql->insert_id;
 
-	// insertar aval dos
-	if (isset($_POST['fiador_dos']) AND $_POST['fiador_dos']==1) {
-		$aval=$sql->Query("INSERT INTO avales VALUES (NULL,'".__($_POST['av_nombre_2'])."','".__($_POST['av_apellidos_2'])."','".__($_POST['av_dir1_2']).' | '.__($_POST['av_dir2_2']).' | '.__($_POST['av_dir3_2'])."','".__($_POST['av_ciudad_2'])."','".__($_POST['av_estado_2'])."' ,'".__($_POST['av_cp_2'])."','".__($_POST['av_tel_2'])."','".__($_POST['av_cel_2'])."','".__($_POST['av_folio_2'])."','".__($_POST['av_stcivil_2'])."','".__($_POST['av_rfc_2'])."','".__($_POST['av_parentezco_2'])."' ) ");
-		$av_id_dos=$sql->insert_id;
-	}else $av_id_dos = 0;
-
 	// insertar venta
-	$compra=$sql->Query("INSERT INTO ventas (ven_id,ve_id,ve_vu,usu_id,suc_id,cli_id,ven_fecha,av_id,ven_tipo,av_iddos) VALUES (NULL,'".__($_POST['ve_id'])."','".__($_POST['att_vu'])."','".__($_POST['usu_id'])."','".__($_POST['suc_id'])."','".$cli_id."','".__($_POST['ven_fecha'])."','".$av_id."','".__($_POST['ven_tipo'])."', '".$av_id_dos."')");
+	$compra=$sql->Query("INSERT INTO ventas (ven_id,ve_id,ve_vu,usu_id,suc_id,cli_id,ven_fecha,av_id,ven_tipo) VALUES (NULL,'".__($_POST['ve_id'])."','".__($_POST['att_vu'])."','".__($_POST['usu_id'])."','".__($_POST['suc_id'])."','".$cli_id."','".__($_POST['ven_fecha'])."','".$av_id."','".__($_POST['ven_tipo'])."')");
 	$ven_id=$sql->insert_id;
 
 	// insertar presupuesto
@@ -95,21 +89,6 @@ if (isset($_POST['guardar'])) {
    	}
 
 
-   	// NUEVO COLOR EXTERIOR
-	if ( $_POST['und_color']==0 AND $_POST['co_nombre']!='') {
-		$color=$sql->Query("INSERT INTO colores VALUES(NULL,'".__($_POST['co_nombre'])."') ");
-	    $und_color=$sql->insert_id;
-	} else $und_color=$_POST['und_color'];
-
-   	/// UNIDAD EN DEPOSITO
-   	if ($_POST['unidep']==1) {
-   		$uni = $sql->Query("INSERT INTO unidad_deposito VALUES (NULL, '".$ven_id."', '".__($_POST['und_marca'])."', '".__($_POST['und_tipo'])."', '".__($_POST['und_modelo'])."', '".$und_color."', '".__($_POST['und_numserie'])."', '".__($_POST['und_motor'])."' ) ");
-   	}
-
-   	// placas
-   	if ($_POST['carta']==1) {
-   		$cart = $sql->Query("INSERT INTO placas VALUES(NULL,'".$cli_id."',  '".$ven_id."',  '".__($_POST['pla_placas'])."',  '".__($_POST['pla_circulacion'])."') ");
-   	}
 
 	echo '<div class="alert alert-success" role="alert">Venta de unidad guardada exitosamente<br>';
 	
@@ -119,13 +98,8 @@ if (isset($_POST['guardar'])) {
 	  echo '<a href="contratocp.php?ven_id='.$ven_id.'" target="_blank" class="btn btn-info">Generar contrato de Compra-Venta-Crédito</a><br><br>'; 
 	  echo '<a href="pagares_anuales.php?tipo=anualidad&ven_id='.$ven_id.'" target="_blank" class="btn btn-info">Pagares por cada anualidad</a><br><br>';
 	  echo '<a href="pagares_anuales.php?tipo=enganche&ven_id='.$ven_id.'" target="_blank" class="btn btn-info">Pagares por cada enganche</a><br><br>';
-	  echo '<a href="pagares_anuales.php?tipo=mes&ven_id='.$ven_id.'" target="_blank" class="btn btn-info">Pagares por cada mes</a><br><br>';
-	  if ($_POST['unidep']==1) {
-	  	echo '<a href="uni_dep.php?ven_id='.$ven_id.'" target="_blank" class="btn btn-info">Convenio de unidad en depósito</a><br><br>';
-	  }
-	  if ($_POST['carta']==1) {
-	  	echo '<a href="carta.php?ven_id='.$ven_id.'" target="_blank" class="btn btn-info">Carta responsiva de placas</a><br>';
-	  }
+	  echo '<a href="pagares_anuales.php?tipo=mes&ven_id='.$ven_id.'" target="_blank" class="btn btn-info">Pagares por cada mes</a>';
+
 	}
 	//echo ' <a href="'.$_SERVER['REQUEST_URI'].'admin.php?cartadeposito" target="_blank" class="btn btn-info">Generar Carta de unidad de depósito</a> </div>';
 }
@@ -161,7 +135,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 		$name='guardar';
 	}
 ?>
-<h1><?php echo $titulo;  ?></h1>
+<h1><?php echo $titulo;?></h1>
 <form class="col-xs-12" id="formatable" action="?venta" method="post" name="formatable" id="formatable" enctype="multipart/form-data">
 	<table class="table table-striped">
 		<tr>
@@ -294,61 +268,8 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 			<td>RFC:</td>
 			<td><input id="av_rfc" name="av_rfc" type="text" class="form-control"></td>
 		</tr>
-	</table>
 
-	<table class="table table-striped">
-	   <tr>
-	    <td colspan="2"><b>Segundo Aval</b></td>
-	    <td></td>
-	    <td></td>
-	    <td></td>
-	    <td><select class="form-control" onclick="fiadordos(this.value);" name="fiador_dos"><option value="1">Si</option><option value="0" selected="selected">No</option></select> </td>
-	   </tr>
 
-	   <tr class="clie fiadordosi" style="display:none">
-			<td>Nombre(s):</td>
-			<td colspan="2"><input id="av_nombre_2" name='av_nombre_2' type="text" class="form-control" ></td>
-			<td>Apellido(s):</td>
-			<td colspan="2"><input id="av_apellidos_2" name='av_apellidos_2' type="text" class="form-control" ></td>
-		</tr>
-		<tr class="prove fiadordosi" style="display:none">
-			<td colspan="6">Dirección:</td>
-		</tr>
-		<tr class="clie fiadordosi" style="display:none">
-			<td>Calle:</td>
-			<td><input id="av_dir1_2" name="av_dir1_2" type="text" class="form-control"></td>
-			<td>Número:</td>
-			<td><input id="av_dir2_2" name="av_dir2_2" type="text" class="form-control"></td>
-			<td>Colonia:</td>
-			<td><input id="av_dir3_2" name="av_dir3_2" type="text" class="form-control"></td>
-		</tr>
-		<tr class="clie fiadordosi" style="display:none">
-			<td>Ciudad:</td>
-			<td><input id="av_ciudad_2" name="av_ciudad_2" type="text" class="form-control"></td>
-			<td>Estado:</td>
-			<td><input id="av_estado_2" name="av_estado_2" type="text" class="form-control"></td>
-			<td>CP:</td>
-			<td><input id="av_cp_2" name="av_cp_2" type="text" class="form-control"></td>
-		</tr>
-		<tr class="clie fiadordosi" style="display:none"> 
-			<td>Tel. (Local):</td>
-			<td><input id="av_tel_2" name="av_tel_2" type="text" class="form-control"></td>
-			<td>Tel. (Celular):</td>
-			<td><input id="av_cel_2" name="av_cel_2" type="text" class="form-control"></td>
-			<td>Folio (IFE):</td>
-			<td><input id="av_folio_2" name="av_folio_2" type="text" class="form-control"></td>
-		</tr>
-		<tr class="fiadordosi" style="display:none">
-		    <td>Estado Civil:</td>
-			<td><input id="av_stcivil_2" name="av_stcivil_2" type="text" class="form-control"></td>
-			<td>Parentesco:</td>
-			<td><input id="av_parentezco_2" name="av_parentezco_2" type="text" class="form-control" ></td>
-			<td>RFC:</td>
-			<td><input id="av_rfc_2" name="av_rfc_2" type="text" class="form-control"></td>
-		</tr>
-	</table>
-
-	<table class="table table-striped">
 		<tr>
 			<td><b>Unidad</b></td>
 			<td>
@@ -541,58 +462,6 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 		</div>
 		<!-- CRÉDITO NUEVO FORMATO-->
 
-		<table class="table table-striped">
-	    	<tr>
-	    		<td colspan="2"><b>Unidad en depósito</b></td>
-	    		<td></td>
-	    		<td></td>
-	    		<td></td>
-	    		<td><select class="form-control" onclick="unideposito(this.value);" name="unidep"><option value="1">Si</option><option value="0" selected="selected">No</option></select> </td>
-	    	</tr>
-	    	<tr class ="unidadsi" style="display:none">
-	    		<td>Marca:</td>
-	    		<td><input type="text" class="form-control" name="und_marca"></td>
-	    		<td>Tipo:</td>
-	    		<td><input type="text" class="form-control" name="und_tipo"></td>
-	    		<td>Modelo:</td>
-	    		<td><input type="number" class="form-control" name="und_modelo"></td>
-	    	</tr>
-	    	<tr class ="unidadsi" style="display:none">
-	    		<td>Color:</td>
-	    		<td>
-	    			<select name="und_color" class="form-control" onchange="veri_color(this.value)">
-						<?php
-						$colores=$sql->Query("SELECT * FROM colores ORDER BY co_id DESC");
-						if ($colores->num_rows>0) {
-							while ($co=$colores->fetch_object()) {
-								$selected=(isset($att->att_colorext) AND $att->att_colorext==$co->co_id)?'selected':null;
-							    echo "<option value='".$co->co_id."' ".$selected.">".$co->co_nombre."</option>";
-							}
-						}
-						echo "<option value='0' >-- Agregar Otro --</option>";
-						?>
-					</select>
-					<label id="otrocolor" style="display:none">Por favor ingresa otro color: <input name="co_nombre"  class="form-control" ></label>
-	    		</td>
-	    		<td>Número de serie:</td>
-	    		<td><input type="text" class="form-control" name="und_numserie"></td>
-	    		<td>Motor:</td>
-	    		<td><input type="text" class="form-control" name="und_motor"></td>
-	    	</tr>
-	    </table>
-
-	    <table class="table table-striped">
-	    	<tr>
-	    		<td colspan="2"><b>Carta responsiva de placas</b></td>
-	    		<td colspan="2"><select class="form-control" onclick="cartas(this.value);" name="carta"><option value="1">Si</option><option value="0" selected="selected">No</option></select> </td>
-	    	</tr>
-	    	<tr class ="cartasi" style="display:none">
-	    		<td>Placas:</td>
-	    		<td><input type="text" class="form-control" name="pla_placas"></td>
-	    		<td>Número de circulación:</td>
-	    		<td><input type="text" class="form-control" name="pla_circulacion"></td>
-	    	</tr>
-	    </table>
 
 		<table class="table table-striped">
 			<tr>
@@ -604,8 +473,6 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 			</tr>
 	    </table>
 
-	   
-
 </form>
 <?php
 }
@@ -614,8 +481,3 @@ else  {
 }
 ?>
 <script src="app.js"></script>
-<script>
-	function veri_color (v) {
-		if (v==0)  $("#otrocolor").show();  else $("#otrocolor").hide();
-	}
-</script>

@@ -7,7 +7,7 @@ if (!isset($_SESSION['userAdmn'])) {
 // AGREGAR USUARIO
 if (isset($_POST['guardar'])) {
 		if($_POST['usu_login']!='' AND  $_POST['usu_pass']!='' AND  $_POST['usu_nombre']!='' AND  $_POST['usu_estado']!=''){
-			$insert=$sql->Query("INSERT INTO usuarios VALUES(NULL, '1', '".addslashes(strip_tags($_POST['usu_login']))."', '".addslashes(strip_tags(md5($_POST['usu_pass'])))."', '".addslashes(strip_tags($_POST['usu_nombre']))."', '".addslashes(strip_tags($_POST['usu_apellidos']))."' , '".addslashes(strip_tags($_POST['usu_estado']))."') ");
+			$insert=$sql->Query("INSERT INTO usuarios VALUES(NULL, '".addslashes(strip_tags($_POST['suc_id']))."', '".addslashes(strip_tags($_POST['usu_login']))."', '".addslashes(strip_tags(md5($_POST['usu_pass'])))."', '".addslashes(strip_tags($_POST['usu_nombre']))."', '".addslashes(strip_tags($_POST['usu_apellidos']))."' , '".addslashes(strip_tags($_POST['usu_estado']))."') ");
 			echo "<div class='alert alert-success'>Usuario Agregado</div>";
 		}else{
 			echo "<div class='alert alert-danger'>Por favor llene todos los campos</div>";
@@ -23,7 +23,7 @@ if (isset($_GET['e'])){
 // EDITAR USUARIO
 if (isset($_POST['editar'])) {
 		if($_POST['usu_login']!='' AND  $_POST['usu_pass']!='' AND  $_POST['usu_nombre']!='' AND  $_POST['usu_estado']!=''){
-			$edit=$sql->Query("UPDATE usuarios SET suc_id='1', usu_login='".addslashes(strip_tags($_POST['usu_login']))."', usu_pass='".addslashes(strip_tags(md5($_POST['usu_pass'])))."', usu_nombre='".addslashes(strip_tags($_POST['usu_nombre']))."', usu_estado='".addslashes(strip_tags($_POST['usu_estado']))."', usu_apellidos='".addslashes(strip_tags($_POST['usu_apellidos']))."' WHERE usu_id='".addslashes(strip_tags($_POST['c']))."' ");
+			$edit=$sql->Query("UPDATE usuarios SET suc_id='".addslashes(strip_tags($_POST['suc_id']))."', usu_login='".addslashes(strip_tags($_POST['usu_login']))."', usu_pass='".addslashes(strip_tags(md5($_POST['usu_pass'])))."', usu_nombre='".addslashes(strip_tags($_POST['usu_nombre']))."', usu_estado='".addslashes(strip_tags($_POST['usu_estado']))."', usu_apellidos='".addslashes(strip_tags($_POST['usu_apellidos']))."' WHERE usu_id='".addslashes(strip_tags($_POST['c']))."' ");
 			echo "<div class='alert alert-success'>Usuario Editado</div>";
 		}else{
 			echo "<div class='alert alert-danger'>Por favor llene todos los campos</div>";
@@ -63,6 +63,20 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 		    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Apellidos" name="usu_apellidos" value="<?php if($show) echo $sel->usu_apellidos; ?>">
 		</div>
 		<div class="form-group">
+			<label>Sucursal:</label><br> 
+			<select name="suc_id" class="form-control" >
+				<?php
+				$suc = $sql->Query("SELECT * FROM sucursales");
+				if ($suc->num_rows>0) {
+					while ($sucu = $suc->fetch_object()) {
+						$selected = ($show AND $sel->suc_id == $sucu->suc_id)?'selected':NULL;
+						echo "<option value='".$sucu->suc_id."' ".$selected." >".$sucu->suc_nombre."</option>";
+					}
+				}
+				?>
+			</select>
+	    </div>
+		<div class="form-group">
 			<label>Estado:</label><br> 
 			<select name="usu_estado" class="form-control" >
 				<option value="1" <?php if( $show AND $sel->usu_estado=='1' ) echo 'selected'; ?>>Activo</option>
@@ -83,8 +97,12 @@ else  {
 			<?php
 				if ($usu->num_rows>0) {
 					while ($u=$usu->fetch_object()) {
+
+						$succ = $sql->Query("SELECT suc_nombre FROM sucursales WHERE suc_id='".$u->suc_id."' ");
+						if($succ->num_rows>0) { $succ=$succ->fetch_object(); $sucname = $succ->suc_nombre; } else { $sucname = 'No asignada';}
+						
 						$estado=($u->usu_estado==1)?'Activo':'Inactivo';
-						echo "<tr> <td>".$u->usu_id."</td> <td>".$u->usu_nombre."</td> <td>".$u->suc_id."</td> <td>".$estado."</td> <td> <a href='".$_SERVER['REQUEST_URI']."&c=".$u->usu_id."' class='btn btn-warning'>Editar</a> <button  class='borrar btn btn-danger' data-name='".$u->usu_nombre."' data-alt='".$_SERVER['REQUEST_URI']."&e=".$u->usu_id."' data-toggle='modal' data-target='#myModal'  >Eliminar</button></td> </tr>";
+						echo "<tr> <td>".$u->usu_id."</td> <td>".$u->usu_nombre."</td> <td>".$sucname."</td> <td>".$estado."</td> <td> <a href='".$_SERVER['REQUEST_URI']."&c=".$u->usu_id."' class='btn btn-warning'>Editar</a> <button  class='borrar btn btn-danger' data-name='".$u->usu_nombre."' data-alt='".$_SERVER['REQUEST_URI']."&e=".$u->usu_id."' data-toggle='modal' data-target='#myModal'  >Eliminar</button></td> </tr>";
 					}
 				}
 			?>

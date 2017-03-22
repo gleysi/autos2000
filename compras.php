@@ -40,16 +40,70 @@ if (isset($_POST['guardar'])) {
 	$vehiculo=$sql->Query("INSERT INTO vehiculos VALUES(NULL,'".__($_POST['suc_id'])."','".date('Y-m-d')."','".$ve_marca."','".__($_POST['ve_tipo'])."','".__($_POST['ve_modelo'])."') ");
 	$ve_id=$sql->insert_id;
 
+	//FOTOS DEL VEHICULO
+	$destino = "/home/autosmx/public_html/media/fotos/".date("Y/m/");
+	if(!isset($_GET['del'])) {
+		if(!file_exists($destino)) {
+	    	mkdir($destino, 0777, tru);
+		}	
+			foreach ($_FILES["f"]["error"] as $i => $error) {
+		      	move_uploaded_file($_FILES['f']['tmp_name'][$i],$destino.$_FILES['f']['name'][$i]);
+		    	$tipo = $_FILES['f']['type'][$i];
+		      	if (($tipo == "image/gif") ||  ($tipo == "image/jpeg") || ($tipo=="image/png")) {
+		     	   	if(file_exists($destino.$_FILES['f']['name'][$i])) {
+			    	$sql->Query("INSERT INTO fotos (ve_id) VALUES ('".$ve_id."')");
+			 		$idfoto=$sql->insert_id;
+			 		$thu=$idfoto.'_100.jpg';
+			 		$med=$idfoto.'_400.jpg';
+			    	$big=$idfoto.'_800.jpg';
+			    	$ori=$idfoto.'.jpg';
+			    	convert($destino.$_FILES['f']['name'][$i],75,100,"jpg",$destino.$thu);//Thumbnail
+			    	convert($destino.$_FILES['f']['name'][$i],75,400,"jpg",$destino.$med);//Mediana
+			    	convert($destino.$_FILES['f']['name'][$i],75,800,"jpg",$destino.$big);//Big
+			    	convert($destino.$_FILES['f']['name'][$i],100,0,"jpg",$destino.$ori);//Original
+			 		unlink($destino.$_FILES['f']['name'][$i]);
+			 	}
+		    	}
+	   	}
+	}
+
+   	
+
 	// COMPRA
 	$compra=$sql->Query("INSERT INTO compra (com_id,ve_id,com_fechaopera,com_fecharegi,pro_id, 	com_formapago, com_tipocompra) VALUES(NULL,'".$ve_id."','".__($_POST['com_fechaopera'])."','".__($_POST['com_fecharegi'])."','".$prov_id."', '".__($_POST['com_formapago'])."', '".__($_POST['com_tipocompra'])."') ");
 	
 	// VEHICULO ATTR
-	$attr=$sql->Query("INSERT INTO vehiculos_attr (att_id,ve_id,att_colorext,att_colorint,att_vestiduras,att_transmision,att_nummotor,att_numserie,att_placas,att_kilometraje,att_tenencias,att_aire,att_stereo,att_cd,att_quemacocos,att_rines,att_bolsasaire,att_cilindros,att_vidrios,att_seguros,att_anotaciones,att_fechafac,att_fechafacoriginal,att_expedida,att_folio,att_foliooriginal,att_preciocompra) VALUES(NULL,'".$ve_id."','".$att_colorext."','".$att_colorint."','".__($_POST['att_vestiduras'])."','".__($_POST['att_transmision'])."','".__($_POST['att_nummotor'])."','".__($_POST['att_numserie'])."','".__($_POST['att_placas'])."','".__($_POST['att_kilometraje'])."','".__($_POST['att_tenencias'])."','".__($_POST['att_aire'])."','".__($_POST['att_stereo'])."','".__($_POST['att_cd'])."','".__($_POST['att_quemacocos'])."','".__($_POST['att_rines'])."','".__($_POST['att_bolsasaire'])."','".__($_POST['att_cilindros'])."','".__($_POST['att_vidrios'])."','".__($_POST['att_seguros'])."','".__($_POST['att_anotaciones'])."','".__($_POST['att_fechafac'])."','".__($_POST['att_fechafacoriginal'])."','".__($_POST['att_expedida'])."','".__($_POST['att_folio'])."','".__($_POST['att_foliooriginal'])."','".__($_POST['att_preciocompra'])."') ");
+	$attr=$sql->Query("INSERT INTO vehiculos_attr (att_id,ve_id,att_colorext,att_colorint,att_vestiduras,att_transmision,att_nummotor,att_numserie,att_placas,att_kilometraje,att_tenencias,att_aire,att_stereo,att_cd,att_quemacocos,att_rines,att_bolsasaire,att_cilindros,att_vidrios,att_seguros,att_anotaciones,att_fechafac,att_fechafacoriginal,att_expedida,att_folio,att_foliooriginal,att_preciocompra,att_disponible,att_web) VALUES(NULL,'".$ve_id."','".$att_colorext."','".$att_colorint."','".__($_POST['att_vestiduras'])."','".__($_POST['att_transmision'])."','".__($_POST['att_nummotor'])."','".__($_POST['att_numserie'])."','".__($_POST['att_placas'])."','".__($_POST['att_kilometraje'])."','".__($_POST['att_tenencias'])."','".__($_POST['att_aire'])."','".__($_POST['att_stereo'])."','".__($_POST['att_cd'])."','".__($_POST['att_quemacocos'])."','".__($_POST['att_rines'])."','".__($_POST['att_bolsasaire'])."','".__($_POST['att_cilindros'])."','".__($_POST['att_vidrios'])."','".__($_POST['att_seguros'])."','".__($_POST['att_anotaciones'])."','".__($_POST['att_fechafac'])."','".__($_POST['att_fechafacoriginal'])."','".__($_POST['att_expedida'])."','".__($_POST['att_folio'])."','".__($_POST['att_foliooriginal'])."','".__($_POST['att_preciocompra'])."','".__($_POST['att_disponible'])."','".__($_POST['att_web'])."') ");
 
 	// guardamos datos en session para imprimir
 	$_SESSION['compra']=$_POST;
+	if ( $_POST['att_colorext']==0 AND $_POST['co_nombre']!=''){
+		$_SESSION['compra']['att_colorext'] = $att_colorext;
+	}
+	if ( $_POST['att_colorint']==0 AND $_POST['co_nombre']!=''){
+		$_SESSION['compra']['att_colorint'] = $att_colorint;
+	}
+	if ( $_POST['ve_marca']==0 AND $_POST['ma_nombre']!=''){
+		$_SESSION['compra']['ve_marca'] = $ve_marca;
+	}
 
 	echo '<div class="alert alert-success" role="alert">Compra de unidad guardada exitosamente<br><a href="/imprimir.php" target="_blank" class="btn btn-info">Imprimir</a> </div>';
+}
+
+// ELIMINAR FOTO DE VEHICULO
+if(isset($_GET['del'])) {
+	
+		$fecha = $sql->Query("SELECT ve_fechaad FROM vehiculos WHERE ve_id='".addslashes(strip_tags($_GET['c']))."'");
+		$f = $fecha->fetch_object();
+		$sql->Query("DELETE FROM fotos WHERE id ='".addslashes(strip_tags($_GET['del']))."'");
+		$fileorig = "/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del'].".jpg";
+	if(file_exists($fileorig)) {
+		unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del'].".jpg");
+		unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_100.jpg");
+		unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_400.jpg");
+		unlink("/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($f->ve_fechaad)).$_GET['del']."_800.jpg");
+		echo "<div class='alert alert-success'>Fotografia eliminada</div>";
+	}
 }
 
 // ELIMINAR COMPRA
@@ -94,20 +148,55 @@ if (isset($_POST['editar'])) {
 	} else $att_colorint=$_POST['att_colorint'];
 
 	// editar vehiculo
-	$vehiculo=$sql->Query("UPDATE vehiculos SET suc_id='".__($_POST['suc_id'])."', ve_fechaad='".date('Y-m-d')."', ve_marca='".$ve_marca."', ve_tipo='".__($_POST['ve_tipo'])."', ve_modelo='".__($_POST['ve_modelo'])."' WHERE ve_id= '".__($_POST['ve_id'])."' ");
+	$vehiculo=$sql->Query("UPDATE vehiculos SET suc_id='".__($_POST['suc_id'])."', ve_marca='".$ve_marca."', ve_tipo='".__($_POST['ve_tipo'])."', ve_modelo='".__($_POST['ve_modelo'])."' WHERE ve_id= '".__($_POST['ve_id'])."' ");
+
+	//Añadir mas fotografias
+	$destino = "/home/autosmx/public_html/media/fotos/".date("Y/m/",strtotime($_POST['fechaad']));
+	if(!file_exists($destino)) {
+    	mkdir($destino, 0777, tru);
+	}	
+	foreach ($_FILES["f"]["error"] as $i => $error) {
+      	move_uploaded_file($_FILES['f']['tmp_name'][$i],$destino.$_FILES['f']['name'][$i]);
+    	$tipo = $_FILES['f']['type'][$i];
+      	if (($tipo == "image/gif") ||  ($tipo == "image/jpeg") || ($tipo=="image/png")) {
+     	   	if(file_exists($destino.$_FILES['f']['name'][$i])) {
+            	$sql->Query("INSERT INTO fotos (ve_id) VALUES ('".__($_POST['ve_id'])."')");
+         		$idfoto=$sql->insert_id;
+         		$thu=$idfoto.'_100.jpg';
+         		$med=$idfoto.'_400.jpg';
+            	$big=$idfoto.'_800.jpg';
+            	$ori=$idfoto.'.jpg';
+            	convert($destino.$_FILES['f']['name'][$i],75,100,"jpg",$destino.$thu);//Thumbnail
+            	convert($destino.$_FILES['f']['name'][$i],75,400,"jpg",$destino.$med);//Mediana
+            	convert($destino.$_FILES['f']['name'][$i],75,800,"jpg",$destino.$big);//Big
+            	convert($destino.$_FILES['f']['name'][$i],100,0,"jpg",$destino.$ori);//Original
+         		unlink($destino.$_FILES['f']['name'][$i]);
+         	}
+    	}
+   	}
 
 	// editar compra
 	$compra=$sql->Query("UPDATE  compra SET  ve_id='".__($_POST['ve_id'])."',  com_fechaopera='".__($_POST['com_fechaopera'])."', com_fecharegi='".__($_POST['com_fecharegi'])."', pro_id='".$prov_id."', com_formapago='".__($_POST['com_formapago'])."', com_tipocompra='".__($_POST['com_tipocompra'])."' WHERE com_id='".__($_POST['com_id'])."' ");
 
 	// editar atributos del vehiculo
-	$attr=$sql->Query("UPDATE vehiculos_attr SET att_colorext='".$att_colorext."', att_colorint='".$att_colorint."', att_vestiduras='".__($_POST['att_vestiduras'])."', att_transmision='".__($_POST['att_transmision'])."', att_nummotor='".__($_POST['att_nummotor'])."', att_numserie='".__($_POST['att_numserie'])."', att_placas='".__($_POST['att_placas'])."', att_kilometraje='".__($_POST['att_kilometraje'])."', att_tenencias='".__($_POST['att_tenencias'])."', att_aire='".__($_POST['att_aire'])."', att_stereo='".__($_POST['att_stereo'])."', att_cd='".__($_POST['att_cd'])."', att_quemacocos='".__($_POST['att_quemacocos'])."', att_rines='".__($_POST['att_rines'])."', att_bolsasaire='".__($_POST['att_bolsasaire'])."', att_cilindros='".__($_POST['att_cilindros'])."', att_vidrios='".__($_POST['att_vidrios'])."', att_seguros='".__($_POST['att_seguros'])."', att_anotaciones='".__($_POST['att_anotaciones'])."', att_fechafac='".__($_POST['att_fechafac'])."', att_fechafacoriginal='".__($_POST['att_fechafacoriginal'])."' ,att_expedida='".__($_POST['att_expedida'])."', att_folio='".__($_POST['att_folio'])."',att_foliooriginal='".__($_POST['att_foliooriginal'])."', att_preciocompra='".__($_POST['att_preciocompra'])."' WHERE att_id='".__($_POST['att_id'])."' ");
+	$attr=$sql->Query("UPDATE vehiculos_attr SET att_colorext='".$att_colorext."', att_colorint='".$att_colorint."', att_vestiduras='".__($_POST['att_vestiduras'])."', att_transmision='".__($_POST['att_transmision'])."', att_nummotor='".__($_POST['att_nummotor'])."', att_numserie='".__($_POST['att_numserie'])."', att_placas='".__($_POST['att_placas'])."', att_kilometraje='".__($_POST['att_kilometraje'])."', att_tenencias='".__($_POST['att_tenencias'])."', att_aire='".__($_POST['att_aire'])."', att_stereo='".__($_POST['att_stereo'])."', att_cd='".__($_POST['att_cd'])."', att_quemacocos='".__($_POST['att_quemacocos'])."', att_rines='".__($_POST['att_rines'])."', att_bolsasaire='".__($_POST['att_bolsasaire'])."', att_cilindros='".__($_POST['att_cilindros'])."', att_vidrios='".__($_POST['att_vidrios'])."', att_seguros='".__($_POST['att_seguros'])."', att_anotaciones='".__($_POST['att_anotaciones'])."', att_fechafac='".__($_POST['att_fechafac'])."', att_fechafacoriginal='".__($_POST['att_fechafacoriginal'])."' ,att_expedida='".__($_POST['att_expedida'])."', att_folio='".__($_POST['att_folio'])."',att_foliooriginal='".__($_POST['att_foliooriginal'])."', att_preciocompra='".__($_POST['att_preciocompra'])."', att_disponible='".__($_POST['att_disponible'])."', att_web='".__($_POST['att_web'])."' WHERE att_id='".__($_POST['att_id'])."' ");
 
 	// guardamos datos en session para imprimir
 	$_SESSION['compra']=$_POST; 
+	if ( $_POST['att_colorext']==0 AND $_POST['co_nombre']!=''){
+		$_SESSION['compra']['att_colorext'] = $att_colorext;
+	}
+	if ( $_POST['att_colorint']==0 AND $_POST['co_nombre']!=''){
+		$_SESSION['compra']['att_colorint'] = $att_colorint;
+	}
+	if ( $_POST['ve_marca']==0 AND $_POST['ma_nombre']!=''){
+		$_SESSION['compra']['ve_marca'] = $ve_marca;
+	}
 
 	echo '<div class="alert alert-success" role="alert">Compra de unidad editada exitosamente<br><a href="/imprimir.php" target="_blank" class="btn btn-info">Imprimir</a> </div>';
 }
 
+$feve=$eve=false;
 if (isset($_GET['a']) OR isset($_GET['c']) ){
 	
 	if (isset($_GET['c'])) {
@@ -122,11 +211,11 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 
 			// fetch de el vehiculo
 			$vei=$sql->Query("SELECT * FROM vehiculos WHERE ve_id='".$sel->ve_id."' ");
-			if($vei->num_rows>0){$vei=$vei->fetch_object(); }
+			if($vei->num_rows>0){$vei=$vei->fetch_object(); $eve=true;}
 
 			// fetch de los atributos del vehiculo
 			$att=$sql->Query("SELECT * FROM vehiculos_attr WHERE ve_id='".$sel->ve_id."' ");
-			if($att->num_rows>0){$att=$att->fetch_object(); }
+			if($att->num_rows>0){$att=$att->fetch_object(); $feve=true; }
 			
 		}  else { echo "<div class='alert alert-danger'>Compra no existe</div"; return; }
 	}else{
@@ -135,7 +224,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 	}
 ?>
 <h1><?php echo $titulo;?></h1>
-<form class="col-xs-12" id="formatable" action="" method="post">
+<form class="col-xs-12" id="formatable" action="" method="post" enctype="multipart/form-data">
 	<table class="table table-striped">
 		<tr>
 				<td colspan="2"><b>Fecha:</b> <?php if (isset($sel->com_id)) echo "<input type='hidden' value='".$sel->com_id."' name='com_id' >"; ?> </td>
@@ -355,8 +444,38 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 			<td>Anotaciones y/o Comentarios:</td>
 			<td colspan="2"> <textarea name="att_anotaciones" class="form-control" rows="5"><?php if(isset($att->att_anotaciones)) echo $att->att_anotaciones; ?></textarea>  </td>
 			<td>Subir fotografias </td>
-			<td colspan="2"> <input type="file"><br> <input type="file"><br> <input type="file"></td>
+			<td colspan="2"> 
+				<div class="col-xs-12" style="padding:0px;">
+				<input type="file" name="f[]" class="form-control input-md" multiple="" accept=".jpg,.jpeg,.png">
+				</div>
+				<style>
+					.delfoto {
+						position: absolute;
+					    top: 0;
+					    right: 15px;
+					    width: 30px;
+					    background: rgba(255, 255, 255, 0.79);
+					}
+					.delfoto img {
+						width: 100%;
+					}
+					</style>
+					<?php 
+					if(isset($_GET['c'])) {
+						$foto = $sql->Query("SELECT id FROM fotos WHERE ve_id='".$vei->ve_id."'");
+						$date = $vei->ve_fechaad;
+						if($foto->num_rows>0) {
+							while ($f = $foto->fetch_object()) {
+								echo '<div class="col-sm-3"><img src="'.MEDIA."/fotos/".date("Y/m/",strtotime($date)).$f->id.'_100.jpg" style="width:100%;margin-right:5px;"> <a href="admin.php?compras&c='.$_GET['c'].'&del='.$f->id.'" class="delfoto"><img src="'.MEDIA.'/iconos/delete.png"></a></div>';
+								//$fotos[$f->id] =  MEDIA."/fotos/".date("Y/m/",strtotime($date)).$f->id."_".$w.".jpg";
+							}
+						}
+						echo '<input type="hidden" name="fechaad" value="'.$date.'">';
+					}
+					?>
+			</td>
 		</tr>
+		<tr> <td colspan="6"><b>Facturación</b></td> </tr>
 		<tr>
 			<td>Fecha (fac) origen:</td>
 			<td><input value="<?php if(isset($att->att_fechafac)) echo $att->att_fechafac; ?>" type="date" name="att_fechafac" class="form-control"></td>
@@ -372,6 +491,7 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 			<td><input value="<?php if(isset($att->att_foliooriginal)) echo $att->att_foliooriginal; else echo date('Y-m-d'); ?>" type="text" name="att_foliooriginal" class="form-control"></td>
 			<td colspan="2"></td>
 		</tr>
+		<tr> <td colspan="6"><b>Forma de Pago</b></td> </tr>
 		<tr>
 			<td>Tenencias pagadas hasta:</td>
 			<td><input value="<?php if(isset($att->att_tenencias)) echo $att->att_tenencias; ?>" type="text" name="att_tenencias" class="form-control"></td>
@@ -401,22 +521,37 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 		<tr>	
 			<td>Costo:</td>
 			<td><input value="<?php if(isset($att->att_preciocompra)) echo $att->att_preciocompra; ?>" type="text" name="att_preciocompra" class="form-control"></td>
-			<td>Sucursal:</td>
-			<td>
-				<select name="suc_id" class="form-control">
-					<?php
-					$sucu=$sql->Query("SELECT suc_id,suc_nombre FROM sucursales ORDER BY suc_id DESC");
-					if ($sucu->num_rows>0) {
-						while ($s=$sucu->fetch_object()) {
-							$selected=(isset($vei->suc_id) AND $vei->suc_id==$s->suc_id)?'selected':null;
-							echo "<option value='".$s->suc_id."'  ".$selected." >".$s->suc_nombre."</option>";
-						}
-					}
-					?>
-				</select>
-			</td>
+			<td></td>
+			<td></td>
 			<td colspan="2"></td>
 		</tr>
+		<!-- Nuevo -->
+		<tr> <td colspan="6"><b>Locación</b></td> </tr>
+			<tr>
+				<td>Sucursal</td>
+				<td>
+					<select name="suc_id" class="form-control">
+						<?php
+						$sucu=$sql->Query("SELECT suc_id,suc_nombre FROM sucursales ORDER BY suc_id DESC");
+						if ($sucu->num_rows>0) {
+							while ($s=$sucu->fetch_object()) {
+								$selected=($eve AND $vei->suc_id==$s->suc_id)?'selected':null;
+								echo "<option value='".$s->suc_id."' ".$selected.">".$s->suc_nombre."</option>";
+							}
+						}
+						?>
+					</select>
+				</td>
+				<td>Disponibilidad</td>
+				<td>
+					<label class="radito"> Si <input checked value="1" type="radio" name="att_disponible" <?php if($feve AND $att->att_disponible==1) echo 'checked';?>></label><label class="radito"> No <input value="0" type="radio"  name="att_disponible" <?php if($feve AND $att->att_disponible==0) echo 'checked';?>></label>
+				</td>
+				<td>Web</td>
+				<td>
+					<label class="radito"> Si <input checked value="1" type="radio" name="att_web" <?php if($feve AND $att->att_web==1) echo 'checked';?> ></label><label class="radito"> No <input value="0" type="radio"  name="att_web" <?php if($feve AND $att->att_web==0) echo 'checked';?>></label>
+				</td>
+			</tr>
+		<!-- Nuevo -->
 		<tr>
 			<td colspan="6"><input type="submit" value="<?php echo $titulo;?>" name="<?php echo $name;?>"  class="btn btn-success"></td>
 		</tr>
