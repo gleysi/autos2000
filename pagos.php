@@ -36,7 +36,7 @@ if (isset($_POST['guardar'])) {
 		// usar tipo de pago como mensualidad o anualidad
 
 		$insert=$sql->Query("INSERT INTO pagos VALUES(NULL,'".__($_GET['id'])."', '".$presu->cli_id."','".$presu->ve_id."', '".__($_POST['pag_fecha'])."', '".__($_POST['pag_pago'])."', '".__($_POST['pag_tipo'])."', '".__($_POST['pag_monatorio'])."'  ) ");
-	    echo "<div class='alert alert-success'>Su pago ah sido agregado exitosamente</div>";
+	    echo "<div class='alert alert-success'>Su pago ha sido agregado exitosamente</div>";
 
 	}
 	else{echo "<div class='alert alert-warning'>Por favor agregue todos los campos</div>";}
