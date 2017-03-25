@@ -551,22 +551,21 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 	    	</tr>
 	    	<tr class ="unidadsi" style="display:none">
 	    		<td>Marca:</td>
-	    		<td><input type="text" class="form-control" name="und_marca"></td>
+	    		<td><input type="text" class="form-control" name="und_marca" id="und_marca"></td>
 	    		<td>Tipo:</td>
-	    		<td><input type="text" class="form-control" name="und_tipo"></td>
+	    		<td><input type="text" class="form-control" name="und_tipo" id="und_tipo"></td>
 	    		<td>Modelo:</td>
-	    		<td><input type="number" class="form-control" name="und_modelo"></td>
+	    		<td><input type="number" class="form-control" name="und_modelo" id="und_modelo"></td>
 	    	</tr>
 	    	<tr class ="unidadsi" style="display:none">
 	    		<td>Color:</td>
 	    		<td>
-	    			<select name="und_color" class="form-control" onchange="veri_color(this.value)">
+	    			<select name="und_color" id="und_color" class="form-control" onchange="veri_color(this.value)">
 						<?php
 						$colores=$sql->Query("SELECT * FROM colores ORDER BY co_id DESC");
 						if ($colores->num_rows>0) {
 							while ($co=$colores->fetch_object()) {
-								$selected=(isset($att->att_colorext) AND $att->att_colorext==$co->co_id)?'selected':null;
-							    echo "<option value='".$co->co_id."' ".$selected.">".$co->co_nombre."</option>";
+							    echo "<option value='".$co->co_id."' >".$co->co_nombre."</option>";
 							}
 						}
 						echo "<option value='0' >-- Agregar Otro --</option>";
@@ -575,9 +574,9 @@ if (isset($_GET['a']) OR isset($_GET['c']) ){
 					<label id="otrocolor" style="display:none">Por favor ingresa otro color: <input name="co_nombre"  class="form-control" ></label>
 	    		</td>
 	    		<td>Número de serie:</td>
-	    		<td><input type="text" class="form-control" name="und_numserie"></td>
+	    		<td><input type="text" class="form-control" name="und_numserie" id="und_numserie"></td>
 	    		<td>Motor:</td>
-	    		<td><input type="text" class="form-control" name="und_motor"></td>
+	    		<td><input type="text" class="form-control" name="und_motor" id="und_motor"></td>
 	    	</tr>
 	    </table>
 

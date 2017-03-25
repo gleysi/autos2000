@@ -9,10 +9,16 @@ function unidad(ve_id){
               data:"ve_id="+ve_id,
               success: function(response){
                   $("#ve_marca").val(response.ve_marca); 
+                  $("#und_marca").val(response.ve_marca); 
                   $("#ve_tipo").val(response.ve_tipo); 
+                  $("#und_tipo").val(response.ve_tipo); 
                   $("#ve_modelo").val(response.ve_modelo); 
+                  $("#und_modelo").val(response.ve_modelo); 
                   $("#att_vu").val(response.att_vu); 
                   $(".att_precioventa").val(response.att_precioventa); 
+                  $("#und_numserie").val(response.und_numserie); 
+                  $("#und_motor").val(response.und_motor); 
+                  $("#und_color").val(response.und_color); 
               }
     });
     setTimeout(function() { costototal();}, 2000);

@@ -176,10 +176,10 @@ if (isset($_GET['ven_id'])) {
      <p><b>Tercera:</b> El precio de compra-venta, lo han determinado de común acuerdo El Vendedor y El Comprador, sobre las siguientes bases:</p>
      <div class="col-xs-12 space">
          <table>
-           <tr> <td valign="top" width="20">A) </td><td> Precio de la unidad: <b>$<?php echo number_format($presu->pre_costototal,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_costototal)); ?>)</b></td></tr>
+           <tr> <td valign="top" width="20">A) </td><td> Precio de la unidad: <b>$<?php echo number_format($presu->pre_precio,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_precio)); ?>)</b></td></tr>
            <tr><td valign="top" width="20">B) </td><td> Enganche: <b>$<?php echo number_format($presu->pre_enganche,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_enganche)); ?>)</b> Número de pagos: <b><?php echo $presu->pre_numpagenganche;?>.</b></td></tr> 
            <tr><td valign="top" width="20">C) </td><td> <b><?php echo $presu->pre_nummensualidades;?></b> Pagos <b>mensuales</b> por la cantidad de: <b>$<?php echo number_format($presu->pre_menusalidades,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_menusalidades)); ?>),</b> los días <?php echo date('d',strtotime($presu->pre_fechapagmensualidades));?> de cada mes. A los pagos realizados por anticipado, se les bonificará el 100% de interés, entregándose el último pagaré de la serie.</b>
-                              <br><b><?php echo $presu->pre_numanualidades;?> </b>Pagos <b>anuales</b> por la cantidad de <b>$<?php echo number_format($presu->pre_anualidades,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_anualidades)); ?>).</b></td>
+                              <br><b><?php echo $presu->pre_numanualidades;?> </b>Pagos <b>anuales</b> por la cantidad de <b>$<?php echo number_format($presu->pre_anualidades,2);?> (SON: <?php echo strtoupper(num2letras($presu->pre_anualidades)); ?>) </b> <?php if($presu->pre_numanualidades>1) echo "en las fechas: "; else echo "en la fecha: "; echo $presu->pre_fechapaganualidades; ?>.</td>
            </tr> 
            <tr><td valign="top" width="20">D) </td><td> <span class='underline'>Al llegar al vencimiento de la anualidad (en caso de existir en el financiamiento), ésta se tendrá que liquidar primero, antes de seguir con los pagos por adelantado, aún en el caso de adelanto de mensualidades.</span> </td> </tr> 
            <tr><td valign="top" width="20">E) </td><td>Forma de pago: <b><?php echo $ventipo;?>.</b> </td></tr> 
