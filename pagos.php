@@ -93,7 +93,7 @@ if (isset($_POST['subirtestigo'])) {
 					<th>Fecha del primer pago</th>
 				</tr>
 				<tr>
-					<td><?php echo number_format($presu->pre_costototal,0); // pre_precio es el precio del vehiculo más no a lo que se vendio ?></td> 
+					<td><?php echo number_format($presu->pre_precio,0);  ?></td> 
 					<td><?php echo strftime('%d de %B del %Y', strtotime($presu->pre_fecha)); ?></td>
 					<td><?php echo $presu->pre_primerpago;?></td>
 				</tr>
@@ -169,6 +169,35 @@ if (isset($_POST['subirtestigo'])) {
 			</table>
 		</div>
 
+		<div>
+			Descargar pagarés:
+			<?php
+
+			/// UNIDAD EN DEPOSITO
+			$uni = $sql->Query("SELECT * FROM unidad_deposito WHERE ven_id='".$presu->ven_id."' ");
+			if($uni->num_rows>0) $unidad = $uni->fetch_object();
+
+			/// CARTA PLACAS
+			$placas = $sql->Query("SELECT * FROM placas WHERE ven_id='".$presu->ven_id."' ");
+			if($placas->num_rows>0) $cartaplacas = $placas->fetch_object();
+
+			if ($venta->ven_tipo==0) { // contado
+			  echo '<a href="contado.php?ven_id='.$presu->ven_id.'" target="_blank" class="btn btn-info">Generar contrato de Compra-Venta-Contado </a> '; 
+			}else{// crédito
+			  echo '<a href="contratocp.php?ven_id='.$presu->ven_id.'" target="_blank" class="btn btn-info">Generar contrato de Compra-Venta-Crédito </a> '; 
+			  echo '<a href="pagares_anuales.php?tipo=anualidad&ven_id='.$presu->ven_id.'" target="_blank" class="btn btn-info">Pagares por cada anualidad </a> ';
+			  echo '<a href="pagares_anuales.php?tipo=enganche&ven_id='.$presu->ven_id.'" target="_blank" class="btn btn-info">Pagares por cada enganche </a> ';
+			  echo '<a href="pagares_anuales.php?tipo=mes&ven_id='.$presu->ven_id.'" target="_blank" class="btn btn-info">Pagares por cada mes</a> <br><br>';
+			  if ($uni->num_rows>0) {
+			  	echo '<a href="uni_dep.php?ven_id='.$presu->ven_id.'" target="_blank" class="btn btn-info">Convenio de unidad en depósito </a> ';
+			  }
+			  if ($placas->num_rows>0) {
+			  	echo '<a href="carta.php?ven_id='.$presu->ven_id.'" target="_blank" class="btn btn-info">Carta responsiva de placas</a><br><br>';
+			  }
+			}
+			?>
+		</div>
+		<br>
 		<div class="panel panel-primary ">
 			<div class="panel-heading">PAGOS</div>
 			<table class="table table-striped">

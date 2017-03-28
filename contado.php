@@ -43,6 +43,10 @@ if (isset($_GET['ven_id'])) {
       $att = $sql->Query("SELECT * FROM vehiculos_attr WHERE ve_id='".$venta->ve_id."' ");
       if ($att->num_rows>0) {
         $att = $att->fetch_object();
+
+        // color
+        $col = $sql->Query("SELECT * FROM colores WHERE co_id='".$att->att_colorext."' ");
+        if($col->num_rows>0) $col = $col->fetch_object();
       }
       // marca
       $marca = $sql->Query("SELECT * FROM marcas WHERE ma_id='".$vehicu->ve_marca."' ");
@@ -91,7 +95,7 @@ if (isset($_GET['ven_id'])) {
 	   <h2  style="text-align:center">SEMINUEVOS <br>CONTRATO DE VENTA DE CONTADO</h2>	
 	   <p style="text-align: right;"><br><br>TORREÓN COAH. A <span class="text-uppercase"><?php echo strftime('%d de %B del %Y', strtotime(date('Y-m-d')));  ?></span></p>
 	   <p><br><br>
-	   		<b>VEHICULO:</b>    Marca <b><?php echo $marca->ma_nombre; ?></b>  Tipo <b><?php echo $vehicu->ve_tipo;?></b> transmisión <b><?php echo $transmision[$att->att_transmision]; ?></b>, modelo <b><?php echo $vehicu->ve_modelo;?></b>, color <b><?php echo $colorext[$att->att_colorext]; ?></b>, <br>
+	   		<b>VEHICULO:</b>    Marca <b><?php echo $marca->ma_nombre; ?></b>  Tipo <b><?php echo $vehicu->ve_tipo;?></b> transmisión <b><?php echo $transmision[$att->att_transmision]; ?></b>, modelo <b><?php echo $vehicu->ve_modelo;?></b>, color <b><?php echo $col->co_nombre; ?></b>, <br>
         serie # <b><?php echo $att->att_numserie;?></b> y motor <b><?php echo $att->att_nummotor;?></b> <br>
         <b>VENDEDOR</b>: <?php echo $usu->usu_nombre." ".$usu->usu_apellidos;?>, <!-- NO HAY USUARIOS CON DIRECCION con domicilio: Av. Doroteo Arango 217 Col. El Dorado, Gomez Palacio Dgo.,  87 12 18 91 69 --><br>
         <b>COMPRADOR</b>: <?php echo $cliente->cli_nombre." ".$cliente->cli_apellido; ?>, con domicilio:  <?php echo $domi[0]." #".$domi[1]." ".$domi[2].", ".$cliente->cli_ciudad." ".$cliente->cli_estado." Tel: ".$cliente->cli_tel;  ?> <br><br>
