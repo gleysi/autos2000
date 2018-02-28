@@ -84,12 +84,12 @@ if (isset($_GET['ven_id'])) {
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <style>.table b{font-size: 12px} .table td{font-size: 14px} .campos td{padding: 3px!important; border-top: 1px solid #000000!Important; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000}</style>
+    <style>.table b{font-size: 12px} .table td{font-size: 12px} .campos td{padding: 3px!important; border-top: 1px solid #000000!Important; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000}</style>
   </head>
 <body> 
 	<style type="text/css" media="print">
 	.nover {display:none}
-	
+	.sal{display:block; page-break-after:always;}
 	</style>
 	<div class="container" id="impricom">
 	<input type="button" onclick="window.print();" class="nover" value="Imprimir" />
@@ -105,10 +105,10 @@ if (isset($_GET['ven_id'])) {
 				$fechas[$i] = date ( 'Y-m-j' , $fechas[$i] );
 			}
 		?>
-		<div class="col-xs-12" style="margin-bottom: 40px;">
-			<table class="table ">
+		<div class="col-xs-12" >
+			<table class="table" style="margin-bottom: 0;">
 				<tr>
-					<td colspan=2 rowspan=3 height="60" align="left"><br><img src="<?php echo MEDIA; ?>/img/logo.png" width=170  hspace=4 vspace=4></td>
+					<td colspan=2 rowspan=3 height="60" align="left"><img src="<?php echo MEDIA; ?>/img/logo.png" width=140  hspace=4 vspace=4></td>
 					<td></td> <td></td> <td></td> <td></td> <td></td>
 				</tr>
 				<tr>
@@ -140,9 +140,9 @@ if (isset($_GET['ven_id'])) {
 				<tr> <td colspan=7 height="20" align="center"><b>(SON: <?php echo strtoupper(num2letras($cuanto)); ?>  00/100 M.N.)</b></td> </tr>
 				<tr>
 					<td colspan=7>
-						Valor recibido a mi (nuestra) entera satisfacción. Este Pagaré forma parte del 1 al <?php echo $num; ?> y todos están sujetos a la condición de<br>
-						que, al no pagarse cualquiera de ellos a su vencimiento, serán exigibles todos los que le sigan en número, además de los ya <br>
-						vencidos, desde la fecha de su vencimiento de este documento hasta el día de su liquidación, causará intereses moratorios - <br>
+						Valor recibido a mi (nuestra) entera satisfacción. Este Pagaré forma parte del 1 al <?php echo $num; ?> y todos están sujetos a la condición de
+						que, al no pagarse cualquiera de ellos a su vencimiento, serán exigibles todos los que le sigan en número, además de los ya 
+						vencidos, desde la fecha de su vencimiento de este documento hasta el día de su liquidación, causará intereses moratorios - 
 						del 7% mensual, pagadero en esta ciudad juntamente con el  principal
 					</td>
 				</tr>
@@ -221,6 +221,10 @@ if (isset($_GET['ven_id'])) {
 
 		</div>
 		<?php
+			$k = $j % 2;
+			if ($k == 0) {
+				echo '<div class="sal">&nbsp;&nbsp;</div> ';
+			}
 		}
 		?>
 	</div>
